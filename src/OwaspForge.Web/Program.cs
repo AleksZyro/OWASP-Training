@@ -10,6 +10,7 @@ var dataDirectory = Path.Combine(builder.Environment.ContentRootPath, "data");
 Directory.CreateDirectory(dataDirectory);
 builder.Services.AddDbContext<ForgeDbContext>(options => options.UseSqlite($"Data Source={Path.Combine(dataDirectory, "forge.db")}"));
 builder.Services.AddSingleton<ChallengeRegistry>();
+builder.Services.AddSingleton<EnglishChallengeRegistry>();
 builder.Services.AddScoped<ChallengeValidator>();
 builder.Services.AddScoped<ProgressService>();
 builder.Services.AddAntiforgery(options =>
