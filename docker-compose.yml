@@ -1,0 +1,21 @@
+services:
+  platform:
+    build:
+      context: .
+      dockerfile: src/OwaspForge.Web/Dockerfile
+    ports:
+      - "127.0.0.1:5080:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+  sandbox:
+    image: alpine:3.20
+    profiles: ["sandbox"]
+    network_mode: none
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt:
+      - no-new-privileges:true
+    command: ["/bin/sh", "-c", "echo 'OWASP Forge sandbox: intentionally vulnerable examples are documentation-only.'; sleep 3600"]
