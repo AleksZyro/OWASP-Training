@@ -26,7 +26,10 @@ public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidato
             await progressService.MarkCompletedAsync(SelectedChallenge, cancellationToken);
             return RedirectToPage(new { id, solved = "true" });
         }
-        Feedback = "Noch nicht ganz. Nutze einen Hinweis und prüfe, welche Regel auf dem Server durchgesetzt werden muss.";
+        var selectedOption = SelectedChallenge.Options.SingleOrDefault(option => option.Value == answer);
+        Feedback = selectedOption is { Feedback.Length: > 0 }
+            ? selectedOption.Feedback
+            : "Noch nicht ganz. Nutze einen Hinweis und prüfe, welche Regel auf dem Server durchgesetzt werden muss.";
         return Page();
     }
     public async Task<IActionResult> OnPostResetAsync(string id, CancellationToken cancellationToken)

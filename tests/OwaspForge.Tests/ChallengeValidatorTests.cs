@@ -25,4 +25,14 @@ public sealed class ChallengeValidatorTests
         Assert.False(validator.IsSolved("ssrf", "blocklist"));
         Assert.False(validator.IsSolved("unknown", "anything"));
     }
+
+    [Fact]
+    public void Every_insecure_option_has_a_learning_explanation()
+    {
+        var insecureOptions = registry.All
+            .SelectMany(challenge => challenge.Options)
+            .Where(option => option.Value != "parameter" && option.Value != "encode" && option.Value != "owner" && option.Value != "secure-auth" && option.Value != "upload-policy" && option.Value != "allowlist");
+
+        Assert.All(insecureOptions, option => Assert.False(string.IsNullOrWhiteSpace(option.Feedback)));
+    }
 }

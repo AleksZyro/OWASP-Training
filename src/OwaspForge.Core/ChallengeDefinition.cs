@@ -17,4 +17,4 @@ public sealed record ChallengeDefinition(
     IReadOnlyList<ChallengeOption> Options,
     string CorrectOption);
 
-public sealed record ChallengeOption(string Value, string Label);
+public sealed record ChallengeOption(string Value, string Label, string Feedback);

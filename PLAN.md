@@ -13,7 +13,7 @@ OWASP Forge ist eine lokale Lernplattform für sechs grundlegende OWASP-Risiken.
 
 ## MVP
 
-Startseite mit Fortschritt, Challenge-Detailseiten mit Lerninhalt, gestaffelten Hinweisen, einem lokalen Konfigurations-Check, Reset und einer einblendbaren Lösung. Die sechs IDs sind `sql-injection`, `xss`, `idor`, `authentication`, `file-upload` und `ssrf`.
+Startseite mit Fortschritt, Challenge-Detailseiten mit Lerninhalt, gestaffelten Hinweisen, einer serverseitig geprüften Antwortauswahl mit spezifischem Feedback, Reset und einer einblendbaren Lösung. Die sechs IDs sind `sql-injection`, `xss`, `idor`, `authentication`, `file-upload` und `ssrf`.
 
 ## Sicherheitsmodell
 
