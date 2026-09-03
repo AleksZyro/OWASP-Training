@@ -3,9 +3,13 @@ on: [push, pull_request]
 jobs:
   verify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 9.0.x
       - run: dotnet restore --locked-mode
@@ -13,4 +17,7 @@ jobs:
       - run: dotnet test --no-restore
       - run: dotnet format --verify-no-changes
       - run: docker compose config
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
