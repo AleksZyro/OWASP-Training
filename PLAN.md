@@ -34,3 +34,7 @@ Die Sandbox ist ein didaktisches Modell und keine Produktions-Härtungsprüfung.
 ## Spätere Erweiterungen
 
 Separate kurzlebige Container pro Lernlauf, Playwright-E2E-Tests, weitere OWASP-Themen, lokalisierte Inhalte und ein Export des persönlichen Lernfortschritts.
+
+## UI-Redesign: Security Lab
+
+Das Redesign verwendet ein dunkles, zugängliches Lab-Console-System: Graphit und tiefes Navy als Fläche, Cyan für Interaktion, Grün für gesicherte Zustände, Amber für Evidenz und Rot nur für Risiken. Die Startseite wird zum vertikalen Missionspfad; Challenge-Seiten führen als klar nummerierter Ablauf durch Kontext, Auswirkung, Prüfung und Lösung. Die deutsche und englische UI erhalten dieselbe Struktur. Es gibt keine externen Fonts, Telemetrie oder schweren Frontend-Abhängigkeiten; der Fokus liegt auf Kontrast, Tastaturbedienung und mobilen Breakpoints.
