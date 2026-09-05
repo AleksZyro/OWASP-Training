@@ -1,6 +1,6 @@
 @{ var english = Context.Request.Path.StartsWithSegments("/en"); }
 <!DOCTYPE html>
 <html lang="@(english ? "en" : "de-CH")">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>@ViewData["Title"] · OWASP Forge</title><link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /></head>
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>@ViewData["Title"] · OWASP Forge</title><link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /><link rel="stylesheet" href="~/css/enhancements.css" asp-append-version="true" /></head>
 <body><a class="skip-link" href="#main">@(english ? "Skip to content" : "Zum Inhalt springen")</a><header class="site-header"><a class="brand" href="@(english ? "/en" : "/")"><span class="brand-mark" aria-hidden="true">OF</span>OWASP <span>Forge</span></a><nav class="language-switch" aria-label="Language"><a class="language-link" href="/" aria-current="@(!english ? "page" : null)">DE</a><a class="language-link" href="/en" aria-current="@(english ? "page" : null)">EN</a></nav><span class="local-badge">@(english ? "localhost only" : "nur localhost")</span></header><main id="main" class="shell">@RenderBody()</main><footer>OWASP Forge · @(english ? "local defensive learning lab · not a certification" : "lokales defensives Lernlabor · keine Zertifizierung")</footer></body>
 </html>

@@ -5,8 +5,14 @@ using OwaspForge.Core;
 using OwaspForge.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://127.0.0.1:5080");
-var dataDirectory = Path.Combine(builder.Environment.ContentRootPath, "data");
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.WebHost.UseUrls("http://127.0.0.1:5080");
+}
+var configuredDataDirectory = builder.Configuration["Forge:DataDirectory"];
+var dataDirectory = string.IsNullOrWhiteSpace(configuredDataDirectory)
+    ? Path.Combine(builder.Environment.ContentRootPath, "data")
+    : Path.GetFullPath(configuredDataDirectory, builder.Environment.ContentRootPath);
 Directory.CreateDirectory(dataDirectory);
 builder.Services.AddDbContext<ForgeDbContext>(options => options.UseSqlite($"Data Source={Path.Combine(dataDirectory, "forge.db")}"));
 builder.Services.AddSingleton<ChallengeRegistry>();
@@ -15,7 +21,8 @@ builder.Services.AddScoped<ChallengeValidator>();
 builder.Services.AddScoped<ProgressService>();
 builder.Services.AddAntiforgery(options =>
 {
-    options.Cookie.Name = "__Host-OwaspForge.Antiforgery";
+    // __Host- cookies require HTTPS. The lab intentionally serves only local HTTP.
+    options.Cookie.Name = "OwaspForge.Antiforgery";
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Strict;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;

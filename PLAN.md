@@ -38,3 +38,7 @@ Separate kurzlebige Container pro Lernlauf, Playwright-E2E-Tests, weitere OWASP-
 ## UI-Redesign: Security Lab
 
 Das Redesign verwendet ein dunkles, zugängliches Lab-Console-System: Graphit und tiefes Navy als Fläche, Cyan für Interaktion, Grün für gesicherte Zustände, Amber für Evidenz und Rot nur für Risiken. Die Startseite wird zum vertikalen Missionspfad; Challenge-Seiten führen als klar nummerierter Ablauf durch Kontext, Auswirkung, Prüfung und Lösung. Die deutsche und englische UI erhalten dieselbe Struktur. Es gibt keine externen Fonts, Telemetrie oder schweren Frontend-Abhängigkeiten; der Fokus liegt auf Kontrast, Tastaturbedienung und mobilen Breakpoints.
+
+## Qualitätsverbesserung: Lernfluss und Verifikation
+
+Ein gestarteter Lernlauf wird lokal als «in Bearbeitung» gespeichert und kann weiterhin mit Reset entfernt werden. Die Startseiten empfehlen die nächste noch nicht gesicherte Station, ohne eine Rangliste oder Zertifizierung zu suggerieren. HTTP-Integrationstests prüfen die lokalen Security-Header, beide Sprachen sowie den Antiforgery-geschützten Abschlussablauf. Da die Plattform über HTTP auf localhost läuft, verwendet das Antiforgery-Cookie keinen `__Host-`-Präfix, der zwingend HTTPS voraussetzt.

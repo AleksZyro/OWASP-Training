@@ -14,6 +14,7 @@ public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidato
     {
         SelectedChallenge = registry.Find(id);
         if (SelectedChallenge is null) return NotFound();
+        await progressService.MarkStartedAsync(SelectedChallenge, cancellationToken);
         IsCompleted = (await progressService.CompletedIdsAsync(cancellationToken)).Contains(id);
         return Page();
     }
