@@ -17,8 +17,8 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
     }
 
     [Theory]
-    [InlineData("/", "Defensives Wissen")]
-    [InlineData("/en", "Defensive knowledge")]
+    [InlineData("/", "Sicherheitswissen")]
+    [InlineData("/en", "Security knowledge")]
     public async Task Start_pages_expose_the_local_security_boundary(string path, string expectedContent)
     {
         var response = await client.GetAsync(path);
@@ -57,7 +57,7 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Equal("/Challenge/sql-injection?solved=true", completeResponse.Headers.Location?.OriginalString);
 
         var home = await client.GetStringAsync("/");
-        Assert.Contains("Gesichert", home, StringComparison.Ordinal);
+        Assert.Contains("Abgeschlossen", home, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Contains("Station zurückgesetzt", resetPage, StringComparison.Ordinal);
 
         var resetHome = await client.GetStringAsync("/");
-        Assert.Contains("Nicht begonnen", resetHome, StringComparison.Ordinal);
+        Assert.Contains("Bereit", resetHome, StringComparison.Ordinal);
     }
 
     [Theory]

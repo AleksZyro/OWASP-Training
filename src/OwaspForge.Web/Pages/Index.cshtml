@@ -1,7 +1,54 @@
 @page
 @model IndexModel
 @{ ViewData["Title"] = "Security Lab"; }
-<section class="hero" aria-labelledby="page-title"><p class="eyebrow">OWASP Forge · Security Lab</p><h1 id="page-title">Defensives Wissen.<br />Lokale Kontrolle.</h1><p>Eine ruhige Werkstatt für typische Webrisiken. Jede Station arbeitet nur mit lokalen Lerninhalten – ohne Scans, reale Ziele oder echte Zugangsdaten.</p><div class="notice" role="note"><strong>Sicherheitsgrenze / 01</strong><br />Nur localhost. Isolierte Sandbox. Kein externer Netzwerkzugriff. Historische Varianten sind klar als <em>intentionally vulnerable</em> gekennzeichnet.</div></section>
-<section class="mission-status" aria-label="Dein Lernfortschritt"><div><p class="eyebrow">Missionsstatus</p><strong>@Model.CompletedCount / @Model.Challenges.Count Stationen gesichert</strong></div><progress value="@Model.CompletedCount" max="@Model.Challenges.Count">@Model.CompletedCount von @Model.Challenges.Count</progress><span>@Model.TotalPoints / @Model.MaximumPoints Punkte<br />keine Zertifizierung</span></section>
-@if (Model.NextChallenge is not null) { <section class="next-station" aria-label="Nächste empfohlene Station"><div><p class="eyebrow">Empfohlener nächster Schritt</p><strong>@Model.NextChallenge.Title</strong><p>Setze den Lernpfad an der nächsten noch nicht gesicherten Station fort.</p></div><a class="button button-solid" asp-page="/Challenge" asp-route-id="@Model.NextChallenge.Id">Lernpfad fortsetzen →</a></section> } else { <section class="next-station complete-lab" aria-label="Lernpfad abgeschlossen"><div><p class="eyebrow">Lernpfad abgeschlossen</p><strong>Alle Stationen gesichert</strong><p>Du kannst einzelne Stationen jederzeit zurücksetzen und nochmals durcharbeiten.</p></div></section> }
-<section aria-labelledby="challenges-title"><div class="section-heading"><div><p class="eyebrow">Lernpfad</p><h2 id="challenges-title">Sechs kontrollierte Lab-Stationen</h2></div><p>Wähle eine Station. Jeder Check läuft serverseitig.</p></div><div class="mission-list">@{ var index = 1; }@foreach (var item in Model.Challenges) { var complete = Model.CompletedIds.Contains(item.Id); var started = Model.StartedIds.Contains(item.Id); var status = complete ? "Gesichert" : started ? "In Bearbeitung" : "Nicht begonnen"; var statusClass = complete ? "done" : started ? "active" : "open"; <article class="mission-card"><span class="mission-index">@index.ToString("D2")</span><div><h3>@item.Title</h3><p>@item.LearningGoal</p><div class="mission-meta"><span>@item.Category</span><span>@item.Difficulty</span><span>@item.Duration</span><span>@item.Points Punkte</span></div></div><div class="mission-action"><span class="status @statusClass">@status</span><a class="button" asp-page="/Challenge" asp-route-id="@item.Id">Station öffnen →</a></div></article> index++; }</div></section>
+<section class="hero course-hero" aria-labelledby="page-title">
+    <p class="eyebrow">OWASP Forge · lokales Security-Lab</p>
+    <h1 id="page-title">Sicherheitswissen,<br />Schritt für Schritt.</h1>
+    <p>Verstehe typische Webrisiken in einer geschützten lokalen Lernumgebung. Jede Station zeigt, was schieflaufen kann – und welche serverseitige Massnahme schützt.</p>
+    <div class="boundary-note" role="note"><strong>Nur für lokales Lernen</strong><span>localhost · isolierte Sandbox · keine externen Scans · keine realen Ziele</span></div>
+</section>
+
+<section class="course-progress" aria-label="Dein Lernfortschritt">
+    <div><p class="eyebrow">Dein Lernweg</p><h2>@Model.CompletedCount von @Model.Challenges.Count Stationen abgeschlossen</h2></div>
+    <progress value="@Model.CompletedCount" max="@Model.Challenges.Count">@Model.CompletedCount von @Model.Challenges.Count</progress>
+    <p class="progress-copy">@Model.TotalPoints Punkte gesammelt · kein Zertifikat</p>
+</section>
+
+@if (Model.NextChallenge is not null)
+{
+    <section class="continue-course" aria-label="Nächste Station">
+        <div class="course-marker" aria-hidden="true">→</div>
+        <div><p class="eyebrow">Als Nächstes</p><h2>@Model.NextChallenge.Title</h2><p>Setze deinen Lernweg mit der nächsten offenen Station fort.</p></div>
+        <a class="button button-solid" asp-page="/Challenge" asp-route-id="@Model.NextChallenge.Id">Weiterlernen</a>
+    </section>
+}
+else
+{
+    <section class="continue-course complete-course" aria-label="Lernweg abgeschlossen">
+        <div class="course-marker" aria-hidden="true">✓</div>
+        <div><p class="eyebrow">Lernweg abgeschlossen</p><h2>Alle Stationen sind gesichert</h2><p>Du kannst jede Station jederzeit erneut durcharbeiten.</p></div>
+    </section>
+}
+
+<section class="course-section" aria-labelledby="challenges-title">
+    <div class="section-heading"><div><p class="eyebrow">Kursweg</p><h2 id="challenges-title">Wähle deine nächste Lab-Station</h2></div><p>Jede Antwort wird serverseitig geprüft.</p></div>
+    <ol class="learning-path">
+        @foreach (var item in Model.Challenges)
+        {
+            var complete = Model.CompletedIds.Contains(item.Id);
+            var started = Model.StartedIds.Contains(item.Id);
+            var status = complete ? "Abgeschlossen" : started ? "In Bearbeitung" : "Bereit";
+            var statusClass = complete ? "done" : started ? "active" : "open";
+            <li class="path-station @statusClass">
+                <div class="path-node" aria-hidden="true">@(complete ? "✓" : "")</div>
+                <article class="station-card">
+                    <div class="station-topline"><span class="category">@item.Category</span><span class="status @statusClass">@status</span></div>
+                    <h3>@item.Title</h3>
+                    <p>@item.LearningGoal</p>
+                    <div class="station-details"><span>@item.Difficulty</span><span>@item.Duration</span><span>@item.Points Punkte</span></div>
+                    <a class="station-link" asp-page="/Challenge" asp-route-id="@item.Id">Station öffnen <span aria-hidden="true">→</span></a>
+                </article>
+            </li>
+        }
+    </ol>
+</section>

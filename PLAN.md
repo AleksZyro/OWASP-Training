@@ -46,3 +46,7 @@ Ein gestarteter Lernlauf wird lokal als «in Bearbeitung» gespeichert und kann 
 ## Stabilisierung: Bedienung und Laufzeit
 
 Der Sprachwechsel bewahrt auf Challenge-Seiten die aktuelle Stations-ID. Erfolgreiche Prüfungen führen zur nächsten offenen Station, ein Reset bestätigt den tatsächlichen lokalen Zustand und verhindert doppelte Formularübermittlungen. Die SQLite-Schemaerstellung erfolgt mit einer versionierten EF-Core-Migration und übernimmt bestehende lokale Fortschrittsdatenbanken. Das Dockerfile führt zuerst einen lockdateibasierten Restore aus; Compose hält die Plattform im internen Netzwerk und veröffentlicht sie nur über `127.0.0.1`.
+
+## UX-Nachschärfung: geführter Kursweg
+
+Der Lernpfad wird als ruhige, vertikale Folge von Stationen statt als technisches Dashboard dargestellt. Numerische Badges und dichte Informationsboxen werden reduziert: Status wird zusätzlich als Text vermittelt, Metadaten treten hinter Lernziel und nächster Handlung zurück. Auf der Detailseite folgt der Inhalt einer durchgehenden Lernsequenz (Kontext, Auswirkung, Schutzmassnahme, Ergebnis, Lösung); die historische, absichtlich unsichere Variante bleibt als klar abgegrenzter Risikohinweis sichtbar.
