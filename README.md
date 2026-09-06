@@ -6,12 +6,13 @@ Lokale ASP.NET-Core-Lernplattform für SQL Injection, XSS, IDOR, Authentifizieru
 
 - sechs lokale OWASP-Challenges mit gestaffelten Hinweisen
 - serverseitige Prüfung der Antworten mit einer Erklärung zu jeder falschen Massnahme
-- lokaler Fortschritt mit Punkten und Reset pro Challenge
+- lokaler Fortschritt mit Punkten, Status «nicht begonnen», «in Bearbeitung» und Reset pro Challenge
+- klare Weiterführung zur nächsten Station, Sprachwechsel innerhalb einer offenen Challenge und lokaler Datenschutzhinweis
 - absichtlich unsichere Varianten werden nur erklärt und nie ausgeführt
 
 ## Start
 
-Mit .NET SDK 9: `dotnet run --project src/OwaspForge.Web`. Die Plattform bindet ausschliesslich an `http://127.0.0.1:5080`; Fortschritt liegt lokal in `data/forge.db`. Optional: `docker compose up --build` nutzt ebenfalls nur `127.0.0.1:5080`.
+Mit dem in `global.json` festgelegten .NET SDK: `dotnet run --project src/OwaspForge.Web`. Die Plattform bindet ausschliesslich an `http://127.0.0.1:5080`; Fortschritt liegt lokal in `src/OwaspForge.Web/data/forge.db`. Optional: `docker compose up --build` nutzt ebenfalls nur `127.0.0.1:5080`. Der Docker-Lernlauf speichert Fortschritt absichtlich nur temporär im Container.
 
 ## Sicherheitsgrenzen
 
@@ -19,7 +20,7 @@ Keine Host-Scans, echten Zugangsdaten, frei wählbaren URLs, Benutzercode oder e
 
 ## Qualität
 
-`dotnet test`, `dotnet format --verify-no-changes` und `docker compose config`.
+`dotnet build OwaspForge.sln --no-restore`, `dotnet test OwaspForge.sln --no-restore`, `dotnet format OwaspForge.sln --verify-no-changes` und `docker compose config`.
 
 ## Quellen
 

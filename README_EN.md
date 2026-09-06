@@ -12,7 +12,8 @@ Current status: **local learning-platform MVP**. German and English interfaces c
 
 - six local OWASP challenges with staged hints
 - server-side answer validation and feedback for unsafe choices
-- local progress, points and reset per challenge
+- local progress, points, not-started/in-progress states and reset per challenge
+- clear continuation to the next station, language switching within an open challenge and a local privacy notice
 - German and English interface at `/` and `/en`
 
 ## Tech Stack
@@ -31,6 +32,8 @@ dotnet run --project src/OwaspForge.Web
 ```
 
 Open `http://127.0.0.1:5080` for German or `http://127.0.0.1:5080/en` for English.
+
+Docker Compose exposes the platform only on `127.0.0.1:5080`. Progress in the Docker learning run is intentionally temporary; the regular local run stores it in `src/OwaspForge.Web/data/forge.db`.
 
 ## Tests and Quality Checks
 

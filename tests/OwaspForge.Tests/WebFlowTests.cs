@@ -2,6 +2,8 @@ using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using OwaspForge.Web.Data;
 
 namespace OwaspForge.Tests;
 
@@ -25,8 +27,10 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains(expectedContent, page, StringComparison.Ordinal);
         Assert.Contains("default-src 'self'", response.Headers.GetValues("Content-Security-Policy").Single(), StringComparison.Ordinal);
+        Assert.Contains("object-src 'none'", response.Headers.GetValues("Content-Security-Policy").Single(), StringComparison.Ordinal);
         Assert.Equal("DENY", response.Headers.GetValues("X-Frame-Options").Single());
         Assert.Equal("nosniff", response.Headers.GetValues("X-Content-Type-Options").Single());
+        Assert.Equal("same-origin", response.Headers.GetValues("Cross-Origin-Opener-Policy").Single());
     }
 
     [Fact]
@@ -54,6 +58,75 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
 
         var home = await client.GetStringAsync("/");
         Assert.Contains("Gesichert", home, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Opening_and_resetting_a_station_updates_the_visible_local_progress_state()
+    {
+        const string challengePath = "/Challenge/xss";
+        var openResponse = await client.GetAsync(challengePath);
+        Assert.Equal(HttpStatusCode.OK, openResponse.StatusCode);
+
+        var inProgressHome = await client.GetStringAsync("/");
+        Assert.Contains("In Bearbeitung", inProgressHome, StringComparison.Ordinal);
+
+        var page = await openResponse.Content.ReadAsStringAsync();
+        var token = Regex.Match(page, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
+        var resetResponse = await client.PostAsync(
+            $"{challengePath}?handler=Reset",
+            new FormUrlEncodedContent([new KeyValuePair<string, string>("__RequestVerificationToken", token)]));
+
+        Assert.Equal(HttpStatusCode.Redirect, resetResponse.StatusCode);
+        Assert.Equal("/Challenge/xss?reset=true", resetResponse.Headers.Location?.OriginalString);
+
+        var resetPage = await client.GetStringAsync("/Challenge/xss?reset=true");
+        Assert.Contains("Station zurückgesetzt", resetPage, StringComparison.Ordinal);
+
+        var resetHome = await client.GetStringAsync("/");
+        Assert.Contains("Nicht begonnen", resetHome, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("/privacy?lang=de", "Lokaler Datenschutzhinweis")]
+    [InlineData("/privacy?lang=en", "Local data notice")]
+    public async Task Privacy_notice_explains_the_local_data_model(string path, string expectedContent)
+    {
+        var response = await client.GetAsync(path);
+        var page = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains(expectedContent, page, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Migration_initializer_preserves_progress_from_a_legacy_ensurecreated_database()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "OwaspForge.Tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        var databasePath = Path.Combine(directory, "legacy.db");
+        var options = new DbContextOptionsBuilder<ForgeDbContext>().UseSqlite($"Data Source={databasePath};Pooling=False").Options;
+
+        try
+        {
+            await using (var legacyDatabase = new ForgeDbContext(options))
+            {
+                await legacyDatabase.Database.EnsureCreatedAsync();
+                legacyDatabase.Progress.Add(new ProgressRecord { ChallengeId = "xss", IsCompleted = true, CompletedAt = DateTimeOffset.UtcNow });
+                await legacyDatabase.SaveChangesAsync();
+            }
+
+            await using (var migratedDatabase = new ForgeDbContext(options))
+            {
+                await ForgeDatabaseInitializer.InitializeAsync(migratedDatabase);
+                Assert.Contains(ForgeDatabaseInitializer.InitialMigrationId, await migratedDatabase.Database.GetAppliedMigrationsAsync());
+                var progress = await migratedDatabase.Progress.SingleAsync(record => record.ChallengeId == "xss");
+                Assert.True(progress.IsCompleted);
+            }
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
     }
 }
 

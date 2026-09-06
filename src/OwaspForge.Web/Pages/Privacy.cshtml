@@ -1,8 +1,21 @@
 ﻿@page
 @model PrivacyModel
 @{
-    ViewData["Title"] = "Privacy Policy";
+    var english = Request.Query["lang"] == "en";
+    ViewData["Title"] = english ? "Privacy" : "Datenschutz";
 }
-<h1>@ViewData["Title"]</h1>
-
-<p>Use this page to detail your site's privacy policy.</p>
+<section class="privacy-page" aria-labelledby="privacy-title">
+    <p class="eyebrow">@(english ? "Local data notice" : "Lokaler Datenschutzhinweis")</p>
+    <h1 id="privacy-title">@ViewData["Title"]</h1>
+    @if (english)
+    {
+        <p>OWASP Forge stores learning progress only in a SQLite file on this computer. It has no accounts, analytics, telemetry, advertising, cloud synchronisation or external API calls.</p>
+        <p>Resetting a station removes its local progress record. You can remove all local progress by deleting the application data file while the app is stopped.</p>
+    }
+    else
+    {
+        <p>OWASP Forge speichert den Lernfortschritt ausschliesslich in einer SQLite-Datei auf diesem Computer. Es gibt keine Konten, Analytics, Telemetrie, Werbung, Cloud-Synchronisation oder externe API-Aufrufe.</p>
+        <p>Das Zurücksetzen einer Station löscht ihren lokalen Fortschritt. Den gesamten Fortschritt kannst du löschen, indem du bei gestoppter Anwendung die lokale Datendatei entfernst.</p>
+    }
+    <a class="button button-solid" href="@(english ? "/en" : "/")">@(english ? "Back to learning path" : "Zum Lernpfad")</a>
+</section>

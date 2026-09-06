@@ -5,7 +5,7 @@ using OwaspForge.Core;
 using OwaspForge.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-if (!builder.Environment.IsEnvironment("Testing"))
+if (!builder.Environment.IsEnvironment("Testing") && string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
 {
     builder.WebHost.UseUrls("http://127.0.0.1:5080");
 }
@@ -36,7 +36,10 @@ app.Use(async (context, next) =>
     context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
     context.Response.Headers.Append("X-Frame-Options", "DENY");
     context.Response.Headers.Append("Referrer-Policy", "no-referrer");
-    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; connect-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'");
+    context.Response.Headers.Append("Cross-Origin-Opener-Policy", "same-origin");
+    context.Response.Headers.Append("Cross-Origin-Resource-Policy", "same-origin");
+    context.Response.Headers.Append("Permissions-Policy", "camera=(), geolocation=(), microphone=(), payment=(), usb=()");
     await next();
 });
 app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = context => context.Context.Response.Headers.Append("Cache-Control", "no-store") });
@@ -45,7 +48,7 @@ app.MapRazorPages();
 using (var scope = app.Services.CreateScope())
 {
     var database = scope.ServiceProvider.GetRequiredService<ForgeDbContext>();
-    await database.Database.EnsureCreatedAsync();
+    await ForgeDatabaseInitializer.InitializeAsync(database);
 }
 app.Run();
 

@@ -8,6 +8,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+      - /app/data
     security_opt:
       - no-new-privileges:true
   sandbox:
@@ -19,3 +20,6 @@ services:
     security_opt:
       - no-new-privileges:true
     command: ["/bin/sh", "-c", "echo 'OWASP Forge sandbox: intentionally vulnerable examples are documentation-only.'; sleep 3600"]
+networks:
+  default:
+    internal: true
