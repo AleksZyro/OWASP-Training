@@ -97,6 +97,9 @@ progress::-webkit-progress-value { background: var(--green); border-radius: 999p
 .challenge-facts div { padding-bottom: .65rem; border-bottom: 1px solid var(--line); }
 .challenge-facts dt { color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .challenge-facts dd { margin: .15rem 0 0; color: var(--cyan-soft); font-size: .88rem; overflow-wrap: anywhere; }
+.demo-launch { margin: 1rem 0 0; padding: .7rem .9rem; border: 1px solid rgba(85, 215, 233, .35); border-radius: .5rem; background: rgba(85, 215, 233, .05); color: var(--muted); font-size: .84rem; }
+.demo-launch strong { color: var(--cyan); }
+.demo-launch code { color: var(--cyan-soft); overflow-wrap: anywhere; }
 .success, .error, .reset-confirmation { margin: 1.4rem 0; padding: .9rem 1rem; border-left: 3px solid; border-radius: 0 .45rem .45rem 0; }
 .success { border-color: var(--green); background: rgba(116, 217, 154, .1); color: #ddf8e7; }
 .success strong { color: var(--green); }

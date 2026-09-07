@@ -7,10 +7,23 @@ namespace OwaspForge.Web.Pages;
 
 public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidator validator, ProgressService progressService) : PageModel
 {
+    private static readonly IReadOnlyDictionary<string, int> DemoPorts = new Dictionary<string, int>(StringComparer.Ordinal)
+    {
+        ["sql-injection"] = 5101,
+        ["xss"] = 5102,
+        ["idor"] = 5103,
+        ["authentication"] = 5104,
+        ["file-upload"] = 5105,
+        ["ssrf"] = 5106,
+    };
+
     public ChallengeDefinition? SelectedChallenge { get; private set; }
     public ChallengeDefinition? NextChallenge { get; private set; }
     public bool IsCompleted { get; private set; }
     public string? Feedback { get; private set; }
+    public string? DemoUrl => SelectedChallenge is not null && DemoPorts.TryGetValue(SelectedChallenge.Id, out var port)
+        ? $"http://127.0.0.1:{port}"
+        : null;
     public async Task<IActionResult> OnGetAsync(string id, CancellationToken cancellationToken)
     {
         SelectedChallenge = registry.Find(id);

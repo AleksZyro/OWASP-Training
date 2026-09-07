@@ -7,6 +7,7 @@
         <div><p class="eyebrow">@Model.SelectedChallenge.Category</p><h1>@Model.SelectedChallenge.Title</h1><p class="lead">@Model.SelectedChallenge.LearningGoal</p></div>
         <dl class="challenge-facts"><div><dt>Difficulty</dt><dd>@Model.SelectedChallenge.Difficulty</dd></div><div><dt>Estimated time</dt><dd>@Model.SelectedChallenge.Duration</dd></div><div><dt>Local sandbox</dt><dd>@Model.SelectedChallenge.Id</dd></div></dl>
     </header>
+    @if (Model.DemoUrl is not null) { <p class="demo-launch"><strong>Local demo:</strong> first run <code>docker compose --profile demos up --build</code>, then <a href="@Model.DemoUrl" target="_blank" rel="noreferrer">open the demo in a new tab</a>.</p> }
     @if (reset) { <div class="reset-confirmation" role="status" aria-live="polite"><strong>Station reset.</strong> Local progress was removed.</div> }
     @if (success || Model.IsCompleted) { <div class="success" role="status" aria-live="polite"><strong>Station secured.</strong> The protection rule was verified on the server. @Model.SelectedChallenge.Points points earned.</div><div class="completion-actions">@if (Model.NextChallenge is not null) { <a class="button button-solid" href="/en/challenge/@Model.NextChallenge.Id">Next station</a> }<a class="button" href="/en">View course path</a></div> }
     @if (Model.Feedback is not null) { <div class="error" role="alert"><strong>Not quite yet.</strong> @Model.Feedback</div> }

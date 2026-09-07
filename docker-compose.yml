@@ -3,23 +3,58 @@ services:
     build:
       context: .
       dockerfile: src/OwaspForge.Web/Dockerfile
-    ports:
-      - "127.0.0.1:5080:8080"
+    ports: ["127.0.0.1:5080:8080"]
     read_only: true
-    tmpfs:
-      - /tmp
-      - /app/data
-    security_opt:
-      - no-new-privileges:true
-  sandbox:
-    image: alpine:3.20
-    profiles: ["sandbox"]
-    network_mode: none
-    read_only: true
-    cap_drop: ["ALL"]
-    security_opt:
-      - no-new-privileges:true
-    command: ["/bin/sh", "-c", "echo 'OWASP Forge sandbox: intentionally vulnerable examples are documentation-only.'; sleep 3600"]
+    tmpfs: ["/tmp", "/app/data"]
+    security_opt: ["no-new-privileges:true"]
+
+  demo-sql-injection:
+    <<: &demo
+      build: { context: ., dockerfile: challenges/Dockerfile }
+      profiles: ["demos"]
+      read_only: true
+      tmpfs: ["/tmp", "/var/cache/nginx", "/var/run"]
+      cap_drop: ["ALL"]
+      security_opt: ["no-new-privileges:true"]
+    build: { context: ., dockerfile: challenges/Dockerfile, args: { CHALLENGE: sql-injection } }
+    ports: ["127.0.0.1:5101:8080"]
+    networks: [demo-sql]
+
+  demo-xss:
+    <<: *demo
+    build: { context: ., dockerfile: challenges/Dockerfile, args: { CHALLENGE: xss } }
+    ports: ["127.0.0.1:5102:8080"]
+    networks: [demo-xss]
+
+  demo-idor:
+    <<: *demo
+    build: { context: ., dockerfile: challenges/Dockerfile, args: { CHALLENGE: idor } }
+    ports: ["127.0.0.1:5103:8080"]
+    networks: [demo-idor]
+
+  demo-authentication:
+    <<: *demo
+    build: { context: ., dockerfile: challenges/Dockerfile, args: { CHALLENGE: authentication } }
+    ports: ["127.0.0.1:5104:8080"]
+    networks: [demo-authentication]
+
+  demo-file-upload:
+    <<: *demo
+    build: { context: ., dockerfile: challenges/Dockerfile, args: { CHALLENGE: file-upload } }
+    ports: ["127.0.0.1:5105:8080"]
+    networks: [demo-upload]
+
+  demo-ssrf:
+    <<: *demo
+    build: { context: ., dockerfile: challenges/Dockerfile, args: { CHALLENGE: ssrf } }
+    ports: ["127.0.0.1:5106:8080"]
+    networks: [demo-ssrf]
+
 networks:
-  default:
-    internal: true
+  default: { internal: true }
+  demo-sql: { internal: true }
+  demo-xss: { internal: true }
+  demo-idor: { internal: true }
+  demo-authentication: { internal: true }
+  demo-upload: { internal: true }
+  demo-ssrf: { internal: true }
