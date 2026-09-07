@@ -98,6 +98,21 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Contains(expectedContent, page, StringComparison.Ordinal);
     }
 
+    [Theory]
+    [InlineData("sql-injection", "5101")]
+    [InlineData("xss", "5102")]
+    [InlineData("idor", "5103")]
+    [InlineData("authentication", "5104")]
+    [InlineData("file-upload", "5105")]
+    [InlineData("ssrf", "5106")]
+    public async Task Every_challenge_links_only_to_its_fixed_local_demo(string challengeId, string port)
+    {
+        var page = await client.GetStringAsync($"/Challenge/{challengeId}");
+
+        Assert.Contains($"http://127.0.0.1:{port}", page, StringComparison.Ordinal);
+        Assert.Contains("docker compose --profile demos up --build", page, StringComparison.Ordinal);
+    }
+
     [Fact]
     public async Task Migration_initializer_preserves_progress_from_a_legacy_ensurecreated_database()
     {

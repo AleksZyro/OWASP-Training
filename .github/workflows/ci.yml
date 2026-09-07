@@ -14,9 +14,19 @@ jobs:
           dotnet-version: 9.0.x
       - run: dotnet restore --locked-mode
       - run: dotnet build --no-restore
+      - run: pwsh tests/OwaspForge.Tests/bin/Debug/net8.0/playwright.ps1 install --with-deps chromium
       - run: dotnet test --no-restore
       - run: dotnet format --verify-no-changes
-      - run: docker compose config
+      - run: dotnet list OwaspForge.sln package --vulnerable --include-transitive
+      - run: docker compose --profile demos config
+      - run: docker compose --profile demos build
+      - uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
       - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
