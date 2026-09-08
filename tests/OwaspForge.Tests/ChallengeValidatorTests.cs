@@ -27,6 +27,16 @@ public sealed class ChallengeValidatorTests
     }
 
     [Fact]
+    public void Each_course_requires_all_three_questions()
+    {
+        var validator = new ChallengeValidator(registry);
+
+        Assert.True(validator.IsSolved("sql-injection", ["parameter", "parameter", "parameter"]));
+        Assert.False(validator.IsSolved("sql-injection", ["parameter", "parameter"]));
+        Assert.Equal(1, validator.CountIncorrect("sql-injection", ["parameter", "concat", "parameter"]));
+    }
+
+    [Fact]
     public void Every_insecure_option_has_a_learning_explanation()
     {
         var insecureOptions = registry.All

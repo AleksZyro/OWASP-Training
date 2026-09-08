@@ -136,6 +136,9 @@ legend { margin-bottom: .75rem; font-weight: 800; }
 .option { display: flex; gap: .7rem; align-items: flex-start; margin: .6rem 0; padding: .82rem .9rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface-raised); cursor: pointer; }
 .option:hover { border-color: var(--cyan); }
 .option input { flex: 0 0 auto; margin: .33rem 0 0; accent-color: var(--cyan); }
+.question-block { margin: 1.25rem 0 1.75rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+.question-block:first-of-type { margin-top: .75rem; padding-top: 0; border-top: 0; }
+.question-prompt { margin: 0 0 .75rem; color: var(--text-strong); line-height: 1.55; }
 details { margin-top: .7rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface); }
 summary { padding: .72rem .85rem; color: var(--amber); font-size: .87rem; font-weight: 800; cursor: pointer; }
 details p { margin: 0; padding: 0 .85rem .85rem; color: var(--muted); font-size: .92rem; }

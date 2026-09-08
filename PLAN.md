@@ -58,3 +58,7 @@ Jede der sechs Stationen erhält eine eigene, statische Demo-App in einem separa
 ## Lernfluss und faire Bewertung
 
 Die Detailseite startet mit einem erklärenden Kontext und führt erst über «Weiter zur Prüfung» zur Antwortauswahl. Hinweise werden einzeln und in Reihenfolge freigeschaltet; jeder Hinweis kostet 10 Punkte. Falsche Antworten werden serverseitig protokolliert und kosten 15 Punkte. Die Anzeige begrenzt die erzielten Punkte auf mindestens null. Die Lösungserklärung bleibt bis zur korrekt validierten Antwort verborgen; bereits abgeschlossene Challenges lassen sich nicht durch nachträgliche Formularaufrufe verändern. Die Regeln gelten identisch in deutscher und englischer Oberfläche.
+
+## Kursausbau: drei Fragen pro Station
+
+Jede der sechs OWASP-Stationen enthält nun drei aufeinander aufbauende Fragen. Eine Station gilt erst als abgeschlossen, wenn alle drei Antworten serverseitig korrekt sind; fehlende oder falsche Antworten werden einzeln bewertet. Damit entstehen 18 Lernschritte bei weiterhin sechs klaren Kurswegen. Weitere Stationen können künftig als zusätzliche `ChallengeDefinition`-Einträge ergänzt werden, ohne die Fortschritts- oder Sicherheitsgrenzen zu verändern.

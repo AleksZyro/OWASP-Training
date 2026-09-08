@@ -9,13 +9,31 @@
     <h1 id="privacy-title">@ViewData["Title"]</h1>
     @if (english)
     {
-        <p>OWASP Forge stores learning progress only in a SQLite file on this computer. It has no accounts, analytics, telemetry, advertising, cloud synchronisation or external API calls.</p>
-        <p>Resetting a station removes its local progress record. You can remove all local progress by deleting the application data file while the app is stopped.</p>
+        <h2>Controller and operator</h2>
+        <p>OWASP Forge is an open-source educational project built and maintained by <strong>Aleksandar Zyro</strong>. OWASP Forge is not a separate legal entity and does not operate an online service. A legal entity, postal address and contact person for a public deployment are intentionally not claimed here and must be added by the operator before hosting this software for others.</p>
+        <h2>What is processed</h2>
+        <p>The local application stores only challenge progress in a SQLite file: challenge identifier, completion state, timestamps, attempts and point deductions. It does not ask for names, email addresses, passwords or other account data. Challenge answers are validated on the local server and are not sent to OWASP or any third party.</p>
+        <h2>Purpose, legal basis and retention</h2>
+        <p>The purpose is to show personal learning progress on the same computer. No remote processing takes place. The operator must select and document the applicable legal basis under the law of their location; this local reference implementation does not provide legal advice. Records remain until a station is reset or the local database is deleted.</p>
+        <h2>Transfers, cookies and logs</h2>
+        <p>There are no analytics, telemetry, advertising, cloud synchronisation, external API calls or data sales. The antiforgery cookie is a short-lived technical security cookie. Structured application logs contain operational events only and must not contain passwords, tokens or challenge answers.</p>
+        <h2>Your control</h2>
+        <p>Reset a station in the interface or stop the app and delete <code>data/forge.db</code> to remove local progress. Because there is no online account, there is no remote profile to export or close. For a hosted deployment, the operator must provide a contact channel and implement the rights and notices required by applicable privacy law.</p>
+        <p>This notice describes the bundled local learning app, not a hosted service operated by OWASP or a third party. See the full operator checklist in <a href="/docs/PRIVACY.md">docs/PRIVACY.md</a>.</p>
     }
     else
     {
-        <p>OWASP Forge speichert den Lernfortschritt ausschliesslich in einer SQLite-Datei auf diesem Computer. Es gibt keine Konten, Analytics, Telemetrie, Werbung, Cloud-Synchronisation oder externe API-Aufrufe.</p>
-        <p>Das Zurücksetzen einer Station löscht ihren lokalen Fortschritt. Den gesamten Fortschritt kannst du löschen, indem du bei gestoppter Anwendung die lokale Datendatei entfernst.</p>
+        <h2>Verantwortliche Stelle und Betreiber</h2>
+        <p>OWASP Forge ist ein quelloffenes Lernprojekt, gebaut und gepflegt von <strong>Aleksandar Zyro</strong>. OWASP Forge ist keine eigene juristische Person und betreibt keinen Online-Dienst. Eine juristische Person, Postadresse und Kontaktstelle für einen öffentlichen Betrieb werden hier bewusst nicht erfunden; der Betreiber muss diese Angaben vor einer Bereitstellung für andere Personen ergänzen.</p>
+        <h2>Welche Daten verarbeitet werden</h2>
+        <p>Die lokale Anwendung speichert nur Lernfortschritt in einer SQLite-Datei: Stations-ID, Abschlussstatus, Zeitstempel, Versuche und Punkteabzüge. Sie verlangt keine Namen, E-Mail-Adressen, Passwörter oder Kontodaten. Antworten werden auf dem lokalen Server geprüft und nicht an OWASP oder Dritte übermittelt.</p>
+        <h2>Zweck, Rechtsgrundlage und Aufbewahrung</h2>
+        <p>Zweck ist die Anzeige des persönlichen Lernfortschritts auf demselben Computer. Es findet keine entfernte Verarbeitung statt. Die verantwortliche Stelle muss die passende Rechtsgrundlage nach dem anwendbaren Recht selbst bestimmen und dokumentieren; diese lokale Referenzimplementierung ist keine Rechtsberatung. Einträge bleiben bestehen, bis eine Station zurückgesetzt oder die lokale Datenbank gelöscht wird.</p>
+        <h2>Übermittlungen, Cookies und Logs</h2>
+        <p>Es gibt keine Analytics, Telemetrie, Werbung, Cloud-Synchronisation, externen API-Aufrufe oder Datenverkäufe. Das Antiforgery-Cookie ist ein kurzlebiges technisches Sicherheitscookie. Strukturierte Logs enthalten nur Betriebsereignisse und dürfen keine Passwörter, Tokens oder Antworten enthalten.</p>
+        <h2>Deine Kontrolle</h2>
+        <p>Setze eine Station in der Oberfläche zurück oder stoppe die Anwendung und lösche <code>data/forge.db</code>, um den lokalen Fortschritt zu entfernen. Da es kein Online-Konto gibt, existiert kein fernes Profil zum Exportieren oder Schliessen. Für einen öffentlichen Betrieb muss der Betreiber eine Kontaktmöglichkeit sowie die nach dem anwendbaren Datenschutzrecht nötigen Rechte und Hinweise ergänzen.</p>
+        <p>Dieser Hinweis beschreibt die mitgelieferte lokale Lernanwendung, nicht einen von OWASP oder Dritten betriebenen Onlinedienst. Die vollständige Betreiber-Checkliste steht in <a href="/docs/PRIVACY.md">docs/PRIVACY.md</a>.</p>
     }
     <a class="button button-solid" href="@(english ? "/en" : "/")">@(english ? "Back to learning path" : "Zum Lernpfad")</a>
 </section>

@@ -4,7 +4,7 @@ Lokale ASP.NET-Core-Lernplattform für SQL Injection, XSS, IDOR, Authentifizieru
 
 ## Funktionen
 
-- sechs lokale OWASP-Challenges mit gestaffelten Hinweisen
+- sechs lokale OWASP-Kurse mit je drei aufeinander aufbauenden Fragen und gestaffelten Hinweisen (18 Lernschritte)
 - serverseitige Prüfung der Antworten mit einer Erklärung zu jeder falschen Massnahme
 - lokaler Fortschritt mit Punkten, Status «nicht begonnen», «in Bearbeitung» und Reset pro Challenge
 - klare Weiterführung zur nächsten Station, Sprachwechsel innerhalb einer offenen Challenge und lokaler Datenschutzhinweis
@@ -23,7 +23,7 @@ Keine Host-Scans, echten Zugangsdaten, frei wählbaren URLs, Benutzercode oder e
 
 ## Weitere Dokumentation
 
-[Architektur](docs/ARCHITECTURE.md) · [Neue Challenges](docs/ADDING-CHALLENGES.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Challenge-Leitfaden](docs/CHALLENGES.md)
+[Architektur](docs/ARCHITECTURE.md) · [Datenschutz und Betreiber-Checkliste](docs/PRIVACY.md) · [Neue Challenges](docs/ADDING-CHALLENGES.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Challenge-Leitfaden](docs/CHALLENGES.md)
 
 ## Qualität
 

@@ -27,6 +27,7 @@ public sealed class EnglishChallengeModel(EnglishChallengeRegistry registry, Cha
     public int EarnedPoints => SelectedChallenge is null ? 0 : Math.Max(0, SelectedChallenge.Points - PenaltyPoints);
     public int HintsUsed { get; private set; }
     public int Attempts { get; private set; }
+    public int QuestionCount => SelectedChallenge?.Questions.Count ?? 0;
     public string? DemoUrl => SelectedChallenge is not null && DemoPorts.TryGetValue(SelectedChallenge.Id, out var port)
         ? $"http://127.0.0.1:{port}"
         : null;
@@ -51,7 +52,7 @@ public sealed class EnglishChallengeModel(EnglishChallengeRegistry registry, Cha
         return Page();
     }
 
-    public async Task<IActionResult> OnPostCheckAsync(string id, string? answer, CancellationToken cancellationToken)
+    public async Task<IActionResult> OnPostCheckAsync(string id, string[]? answers, CancellationToken cancellationToken)
     {
         SelectedChallenge = registry.Find(id);
         if (SelectedChallenge is null) return NotFound();
@@ -62,20 +63,24 @@ public sealed class EnglishChallengeModel(EnglishChallengeRegistry registry, Cha
         }
         ShowQuiz = true;
         await progressService.MarkStartedAsync(SelectedChallenge, cancellationToken);
-        if (validator.IsSolved(id, answer))
+        var submittedAnswers = answers ?? [];
+        if (validator.IsSolved(id, submittedAnswers))
         {
             await progressService.MarkCompletedAsync(SelectedChallenge, cancellationToken);
             return Redirect($"/en/challenge/{id}?solved=true&step=solution");
         }
 
-        await progressService.RecordIncorrectAttemptAsync(id, 15, cancellationToken);
+        var incorrectCount = Math.Max(1, validator.CountIncorrect(id, submittedAnswers));
+        await progressService.RecordIncorrectAttemptAsync(id, 15 * incorrectCount, cancellationToken);
         var currentRecord = await progressService.FindAsync(id, cancellationToken);
         PenaltyPoints = currentRecord?.PenaltyPoints ?? 0;
         HintsUsed = currentRecord?.HintsUsed ?? 0;
         Attempts = currentRecord?.Attempts ?? 0;
 
-        Feedback = SelectedChallenge.Options.SingleOrDefault(option => option.Value == answer)?.Feedback
-            ?? "Not quite. Use a hint and identify the rule enforced on the server.";
+        var selectedOption = SelectedChallenge.Options.SingleOrDefault(option => option.Value == submittedAnswers.FirstOrDefault());
+        Feedback = selectedOption is { Feedback.Length: > 0 }
+            ? $"{selectedOption.Feedback} {incorrectCount} answer(s) were incorrect; {15 * incorrectCount} points were deducted."
+            : $"Not quite. {incorrectCount} answer(s) were incorrect; {15 * incorrectCount} points were deducted. Use a hint and identify the rule enforced on the server.";
         return Page();
     }
 

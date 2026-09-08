@@ -10,7 +10,7 @@ Current status: **local learning-platform MVP**. German and English interfaces c
 
 ## Main Features
 
-- six local OWASP challenges with staged hints
+- six local OWASP courses with three progressive questions each and staged hints (18 learning steps)
 - server-side answer validation and feedback for unsafe choices
 - local progress, points, not-started/in-progress states and reset per challenge
 - clear continuation to the next station, language switching within an open challenge and a local privacy notice
@@ -57,7 +57,7 @@ OWASP Forge never scans hosts, stores real credentials, executes user code or ac
 
 ## Further documentation
 
-[Architecture](docs/ARCHITECTURE.md) · [Adding challenges](docs/ADDING-CHALLENGES.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Challenge guide](docs/CHALLENGES.md)
+[Architecture](docs/ARCHITECTURE.md) · [Privacy and operator checklist](docs/PRIVACY.md) · [Adding challenges](docs/ADDING-CHALLENGES.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Challenge guide](docs/CHALLENGES.md)
 
 ## Sources
 

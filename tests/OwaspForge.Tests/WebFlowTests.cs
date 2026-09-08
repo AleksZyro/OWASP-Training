@@ -50,7 +50,9 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
             new FormUrlEncodedContent(
             [
                 new KeyValuePair<string, string>("__RequestVerificationToken", token),
-                new KeyValuePair<string, string>("answer", "parameter"),
+                new KeyValuePair<string, string>("answers[0]", "parameter"),
+                new KeyValuePair<string, string>("answers[1]", "parameter"),
+                new KeyValuePair<string, string>("answers[2]", "parameter"),
             ]));
 
         Assert.Equal(HttpStatusCode.Redirect, completeResponse.StatusCode);
@@ -96,6 +98,16 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains(expectedContent, page, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Privacy_notice_names_the_project_author_and_operator_boundary()
+    {
+        var page = await client.GetStringAsync("/privacy?lang=de");
+
+        Assert.Contains("Aleksandar Zyro", page, StringComparison.Ordinal);
+        Assert.Contains("keine eigene juristische Person", page, StringComparison.Ordinal);
+        Assert.Contains("Rechtsgrundlage", page, StringComparison.Ordinal);
     }
 
     [Theory]
@@ -154,14 +166,17 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         var quizResponse = await client.GetAsync($"{challengePath}?step=quiz");
         var quiz = await quizResponse.Content.ReadAsStringAsync();
         var token = Regex.Match(quiz, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
-        Assert.Contains("Antwort prüfen", quiz, StringComparison.Ordinal);
+        Assert.Contains("Antworten prüfen", quiz, StringComparison.Ordinal);
+        Assert.Contains("3 Fragen", quiz, StringComparison.Ordinal);
 
         var wrongResponse = await client.PostAsync($"{challengePath}?handler=Check", new FormUrlEncodedContent([
             new KeyValuePair<string, string>("__RequestVerificationToken", token),
-            new KeyValuePair<string, string>("answer", "raw"),
+            new KeyValuePair<string, string>("answers[0]", "raw"),
+            new KeyValuePair<string, string>("answers[1]", "raw"),
+            new KeyValuePair<string, string>("answers[2]", "raw"),
         ]));
         var wrongPage = await wrongResponse.Content.ReadAsStringAsync();
-        Assert.Contains("15 Punkte wurden", wrongPage, StringComparison.Ordinal);
+        Assert.Contains("45 Punkte", wrongPage, StringComparison.Ordinal);
         Assert.DoesNotContain("Lösungserklärung", wrongPage, StringComparison.Ordinal);
 
         var wrongToken = Regex.Match(wrongPage, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;

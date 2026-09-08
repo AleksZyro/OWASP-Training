@@ -33,8 +33,12 @@ public sealed class BrowserFlowTests
 
             await page.GotoAsync($"http://127.0.0.1:{port}/Challenge/sql-injection");
             await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Weiter zur Prüfung" }).ClickAsync();
-            await page.Locator("input[value='parameter']").CheckAsync();
-            await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Antwort prüfen" }).ClickAsync();
+            var safeAnswers = page.Locator("input[value='parameter']");
+            for (var questionIndex = 0; questionIndex < 3; questionIndex++)
+            {
+                await safeAnswers.Nth(questionIndex).CheckAsync();
+            }
+            await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Antworten prüfen" }).ClickAsync();
             await page.WaitForURLAsync("**/Challenge/sql-injection?solved=true&step=solution");
             Assert.Contains("Station gesichert", await page.Locator("main").InnerTextAsync(), StringComparison.Ordinal);
         }
@@ -46,7 +50,7 @@ public sealed class BrowserFlowTests
                 await process.WaitForExitAsync();
             }
 
-            Directory.Delete(dataDirectory, recursive: true);
+            DeleteDirectoryWithRetry(dataDirectory);
         }
     }
 
@@ -85,5 +89,23 @@ public sealed class BrowserFlowTests
         }
 
         throw new TimeoutException("The local test platform did not become reachable.");
+    }
+
+    private static void DeleteDirectoryWithRetry(string path)
+    {
+        for (var attempt = 1; attempt <= 3; attempt++)
+        {
+            try
+            {
+                Directory.Delete(path, recursive: true);
+                return;
+            }
+            catch (IOException) when (attempt < 3)
+            {
+                Thread.Sleep(100 * attempt);
+            }
+        }
+
+        Directory.Delete(path, recursive: true);
     }
 }

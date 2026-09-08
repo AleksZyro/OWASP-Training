@@ -14,5 +14,20 @@ public sealed class EnglishChallengeRegistry
     ];
     public IReadOnlyList<ChallengeDefinition> All => Definitions;
     public ChallengeDefinition? Find(string id) => Definitions.SingleOrDefault(item => StringComparer.Ordinal.Equals(item.Id, id));
-    private static ChallengeDefinition Create(string id, string title, string category, string difficulty, string duration, int points, string goal, string explanation, string task, string impact, string expected, string url, string hintOne, string hintTwo, params (string Value, string Label, string Feedback)[] options) => new(id, title, category, difficulty, duration, points, goal, explanation, task, impact, expected, url, [hintOne, hintTwo], options.Select(option => new ChallengeOption(option.Value, option.Label, option.Feedback)).ToArray(), options[1].Value);
+    private static ChallengeDefinition Create(string id, string title, string category, string difficulty, string duration, int points, string goal, string explanation, string task, string impact, string expected, string url, string hintOne, string hintTwo, params (string Value, string Label, string Feedback)[] options) =>
+        new(id, title, category, difficulty, duration, points, goal, explanation, task, impact, expected, url, [hintOne, hintTwo], options.Select(option => new ChallengeOption(option.Value, option.Label, option.Feedback)).ToArray(), options[1].Value)
+        {
+            Questions = QuestionPrompts(id, task).Select(prompt => new ChallengeQuestion(prompt)).ToArray()
+        };
+
+    private static IReadOnlyList<string> QuestionPrompts(string id, string task) => id switch
+    {
+        "sql-injection" => [task, "Which separation prevents input from becoming SQL code?", "What must the server enforce for every search, regardless of the browser?"],
+        "xss" => [task, "How should a local comment be rendered safely in an HTML page?", "Which output decision prevents markup from executing as code?"],
+        "idor" => [task, "Which check decides whether the requested profile may be read?", "Why is an object ID from a URL never proof of authorization?"],
+        "authentication" => [task, "Which combination protects a local account from password and session abuse?", "Which control limits repeated failed sign-in attempts?"],
+        "file-upload" => [task, "Which rules apply before storing a local file?", "Where should a non-executable upload be stored safely?"],
+        "ssrf" => [task, "How does the server limit requests to the intended mock environment?", "Why is a fixed identifier allowlist safer than a client-supplied URL?"],
+        _ => [task]
+    };
 }

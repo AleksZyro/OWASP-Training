@@ -27,6 +27,7 @@ public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidato
     public int EarnedPoints => SelectedChallenge is null ? 0 : Math.Max(0, SelectedChallenge.Points - PenaltyPoints);
     public int HintsUsed { get; private set; }
     public int Attempts { get; private set; }
+    public int QuestionCount => SelectedChallenge?.Questions.Count ?? 0;
     public string? DemoUrl => SelectedChallenge is not null && DemoPorts.TryGetValue(SelectedChallenge.Id, out var port)
         ? $"http://127.0.0.1:{port}"
         : null;
@@ -49,7 +50,7 @@ public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidato
         NextChallenge = registry.All.FirstOrDefault(challenge => challenge.Id != id && !completedIds.Contains(challenge.Id));
         return Page();
     }
-    public async Task<IActionResult> OnPostCheckAsync(string id, string? answer, CancellationToken cancellationToken)
+    public async Task<IActionResult> OnPostCheckAsync(string id, string[]? answers, CancellationToken cancellationToken)
     {
         SelectedChallenge = registry.Find(id);
         if (SelectedChallenge is null) return NotFound();
@@ -60,20 +61,22 @@ public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidato
         }
         ShowQuiz = true;
         await progressService.MarkStartedAsync(SelectedChallenge, cancellationToken);
-        if (validator.IsSolved(id, answer))
+        var submittedAnswers = answers ?? [];
+        if (validator.IsSolved(id, submittedAnswers))
         {
             await progressService.MarkCompletedAsync(SelectedChallenge, cancellationToken);
             return RedirectToPage(new { id, solved = "true", step = "solution" });
         }
-        await progressService.RecordIncorrectAttemptAsync(id, 15, cancellationToken);
+        var incorrectCount = Math.Max(1, validator.CountIncorrect(id, submittedAnswers));
+        await progressService.RecordIncorrectAttemptAsync(id, 15 * incorrectCount, cancellationToken);
         var currentRecord = await progressService.FindAsync(id, cancellationToken);
         PenaltyPoints = currentRecord?.PenaltyPoints ?? 0;
         HintsUsed = currentRecord?.HintsUsed ?? 0;
         Attempts = currentRecord?.Attempts ?? 0;
-        var selectedOption = SelectedChallenge.Options.SingleOrDefault(option => option.Value == answer);
+        var selectedOption = SelectedChallenge.Options.SingleOrDefault(option => option.Value == submittedAnswers.FirstOrDefault());
         Feedback = selectedOption is { Feedback.Length: > 0 }
-            ? selectedOption.Feedback
-            : "Noch nicht ganz. Nutze einen Hinweis und prüfe, welche Regel auf dem Server durchgesetzt werden muss.";
+            ? $"{selectedOption.Feedback} {incorrectCount} Antwort(en) waren noch nicht korrekt; dafür wurden {15 * incorrectCount} Punkte abgezogen."
+            : $"Noch nicht ganz. {incorrectCount} Antwort(en) waren noch nicht korrekt; dafür wurden {15 * incorrectCount} Punkte abgezogen. Nutze einen Hinweis und prüfe, welche Regel auf dem Server durchgesetzt werden muss.";
         return Page();
     }
     public async Task<IActionResult> OnPostHintAsync(string id, int level, CancellationToken cancellationToken)

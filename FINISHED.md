@@ -2,7 +2,7 @@
 
 ## Implementiert
 
-- Razor-Pages-Plattform auf `127.0.0.1:5080`, sechs OWASP-Challenges, geführter Intro-/Prüfungsablauf, gestaffelte Hinweise mit Punkteabzug, sichere Lösungsauswahl, nachvollziehbaren Reset, Weiterführung und SQLite-Fortschritt.
+- Razor-Pages-Plattform auf `127.0.0.1:5080`, sechs OWASP-Kurse mit je drei aufeinander aufbauenden Fragen (18 Lernschritte), geführtem Intro-/Prüfungsablauf, gestaffelten Hinweisen mit Punkteabzug, sicherer Lösungsauswahl, nachvollziehbarem Reset, Weiterführung und SQLite-Fortschritt.
 - Neues neutrales SVG-Schildlogo ohne «OF»-Initialen; die Oberfläche bleibt vollständig lokal und ohne externe Assets.
 - Sechs getrennte, statische und interaktive lokale Demo-Container auf `127.0.0.1:5101` bis `5106`; je Demo ein separates internes Docker-Netz, read-only Dateisystem, keine Capabilities und keine ausnutzbare historische Variante.
 - Serverseitige Registry-Validierung, CSRF-Schutz, erweiterte sichere Standardheader, zentrale Fehlerbehandlung, versionierte EF-Core-Migrationen, Playwright-Browser-Flow und CI-Prüfungen für Abhängigkeiten, Compose-Build, Trivy-Dateisystemscan und Gitleaks.
@@ -11,7 +11,7 @@
 ## Ausgeführte Prüfungen
 
 - `dotnet build OwaspForge.sln --no-restore` – erfolgreich, 0 Warnungen/Fehler.
-- `dotnet test OwaspForge.sln --no-restore` – 24/24 erfolgreich.
+- `dotnet test OwaspForge.sln --no-restore` – 25/25 erfolgreich.
 - Playwright Chromium installiert und Browser-Flow tatsächlich ausgeführt – 1/1 erfolgreich.
 - `dotnet format OwaspForge.sln --verify-no-changes` – erfolgreich.
 - `docker compose config` – erfolgreich.

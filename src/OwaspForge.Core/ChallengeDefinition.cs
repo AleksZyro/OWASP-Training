@@ -15,6 +15,10 @@ public sealed record ChallengeDefinition(
     string OfficialUrl,
     IReadOnlyList<string> Hints,
     IReadOnlyList<ChallengeOption> Options,
-    string CorrectOption);
+    string CorrectOption)
+{
+    public IReadOnlyList<ChallengeQuestion> Questions { get; init; } = [];
+}
 
+public sealed record ChallengeQuestion(string Prompt);
 public sealed record ChallengeOption(string Value, string Label, string Feedback);

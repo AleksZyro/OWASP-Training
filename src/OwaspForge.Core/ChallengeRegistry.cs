@@ -48,5 +48,19 @@ public sealed class ChallengeRegistry
     public ChallengeDefinition? Find(string id) => Definitions.SingleOrDefault(challenge => StringComparer.Ordinal.Equals(challenge.Id, id));
 
     private static ChallengeDefinition Create(string id, string title, string category, string difficulty, string duration, int points, string goal, string explanation, string task, string impact, string expected, string url, string hintOne, string hintTwo, params (string Value, string Label, string Feedback)[] options) =>
-        new(id, title, category, difficulty, duration, points, goal, explanation, task, impact, expected, url, [hintOne, hintTwo], options.Select(option => new ChallengeOption(option.Value, option.Label, option.Feedback)).ToArray(), options[1].Value);
+        new(id, title, category, difficulty, duration, points, goal, explanation, task, impact, expected, url, [hintOne, hintTwo], options.Select(option => new ChallengeOption(option.Value, option.Label, option.Feedback)).ToArray(), options[1].Value)
+        {
+            Questions = QuestionPrompts(id, task).Select(prompt => new ChallengeQuestion(prompt)).ToArray()
+        };
+
+    private static IReadOnlyList<string> QuestionPrompts(string id, string task) => id switch
+    {
+        "sql-injection" => [task, "Welche Trennung verhindert, dass Eingaben als SQL-Code interpretiert werden?", "Was muss der Server bei jeder Suchanfrage unabhängig vom Browser erzwingen?"],
+        "xss" => [task, "Wie wird ein lokaler Kommentar sicher in einer HTML-Seite dargestellt?", "Welche Ausgabeentscheidung verhindert, dass Markup als Code ausgeführt wird?"],
+        "idor" => [task, "Welche Prüfung entscheidet, ob das angeforderte Profil gelesen werden darf?", "Warum reicht eine Objekt-ID aus der URL niemals als Berechtigungsnachweis?"],
+        "authentication" => [task, "Welche Kombination schützt ein lokales Konto gegen Passwort- und Sessionmissbrauch?", "Welche Kontrolle begrenzt wiederholte fehlgeschlagene Anmeldeversuche?"],
+        "file-upload" => [task, "Welche Regeln gelten vor dem Speichern einer lokalen Datei?", "Wo sollte eine nicht ausführbare Upload-Datei sicher abgelegt werden?"],
+        "ssrf" => [task, "Wie begrenzt der Server Abrufe auf die vorgesehene Mock-Umgebung?", "Warum ist eine feste Kennungs-Allowlist sicherer als eine URL vom Client?"],
+        _ => [task]
+    };
 }
