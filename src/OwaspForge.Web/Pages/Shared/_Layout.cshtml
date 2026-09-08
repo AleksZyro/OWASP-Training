@@ -16,7 +16,7 @@
 <body>
     <a class="skip-link" href="#main">@(english ? "Skip to content" : "Zum Inhalt springen")</a>
     <header class="site-header">
-        <a class="brand" href="@(english ? "/en" : "/")"><span class="brand-mark" aria-hidden="true">OF</span>OWASP <span>Forge</span></a>
+        <a class="brand" href="@(english ? "/en" : "/")" aria-label="OWASP Forge Startseite"><svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M20 3 34 8v10c0 9-5.5 15.3-14 19C11.5 33.3 6 27 6 18V8l14-5Z"/><path d="m14 21 4 4 9-10"/></svg><span class="brand-name">OWASP <b>Forge</b></span></a>
         <nav class="language-switch" aria-label="@(english ? "Language" : "Sprache")">
             <a class="language-link" href="@germanTarget" aria-current="@(!english ? "page" : null)">DE</a>
             <a class="language-link" href="@englishTarget" aria-current="@(english ? "page" : null)">EN</a>

@@ -12,6 +12,9 @@ public sealed class ForgeDbContext(DbContextOptions<ForgeDbContext> options) : D
         {
             entity.HasIndex(record => record.ChallengeId).IsUnique();
             entity.Property(record => record.ChallengeId).HasMaxLength(80);
+            entity.Property(record => record.PenaltyPoints).HasDefaultValue(0);
+            entity.Property(record => record.HintsUsed).HasDefaultValue(0);
+            entity.Property(record => record.Attempts).HasDefaultValue(0);
         });
     }
 }

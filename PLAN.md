@@ -54,3 +54,7 @@ Der Lernpfad wird als ruhige, vertikale Folge von Stationen statt als technische
 ## Ausbau: isolierte Demo-Stationen und Lieferqualität
 
 Jede der sechs Stationen erhält eine eigene, statische Demo-App in einem separaten internen Docker-Netz. Die Demos sind interaktive Sicherheits-Simulationen, keine ausführbaren Schwachstellen: Sie akzeptieren keine beliebigen Netzadressen, führen keine Uploads oder Skripte aus und enthalten weder reale Zugangsdaten noch produktive Daten. Die Compose-Demos werden nur über feste localhost-Ports veröffentlicht. Ergänzend kommen eine Architektur-, Erweiterungs- und Troubleshooting-Dokumentation, eine CI-Abhängigkeitsprüfung sowie Browser-Flow-Tests hinzu. Docker-Build und Container-Scan bleiben an eine verfügbare Docker-Engine gebunden.
+
+## Lernfluss und faire Bewertung
+
+Die Detailseite startet mit einem erklärenden Kontext und führt erst über «Weiter zur Prüfung» zur Antwortauswahl. Hinweise werden einzeln und in Reihenfolge freigeschaltet; jeder Hinweis kostet 10 Punkte. Falsche Antworten werden serverseitig protokolliert und kosten 15 Punkte. Die Anzeige begrenzt die erzielten Punkte auf mindestens null. Die Lösungserklärung bleibt bis zur korrekt validierten Antwort verborgen; bereits abgeschlossene Challenges lassen sich nicht durch nachträgliche Formularaufrufe verändern. Die Regeln gelten identisch in deutscher und englischer Oberfläche.

@@ -1,38 +1,21 @@
 @page "{id}"
 @model ChallengeModel
-@{ ViewData["Title"] = Model.SelectedChallenge!.Title; var success = Request.Query["solved"] == "true"; var reset = Request.Query["reset"] == "true"; }
+@{ ViewData["Title"] = Model.SelectedChallenge!.Title; var success = Request.Query["solved"] == "true"; var reset = Request.Query["reset"] == "true"; var hint = Request.Query["hint"].ToString(); }
 <a class="back-link" asp-page="/Index">← Zum Kursweg</a>
 <article>
-    <header class="challenge-header">
-        <div><p class="eyebrow">@Model.SelectedChallenge.Category</p><h1>@Model.SelectedChallenge.Title</h1><p class="lead">@Model.SelectedChallenge.LearningGoal</p></div>
-        <dl class="challenge-facts"><div><dt>Schwierigkeit</dt><dd>@Model.SelectedChallenge.Difficulty</dd></div><div><dt>Arbeitszeit</dt><dd>@Model.SelectedChallenge.Duration</dd></div><div><dt>Lokale Sandbox</dt><dd>@Model.SelectedChallenge.Id</dd></div></dl>
-    </header>
-    @if (Model.DemoUrl is not null) { <p class="demo-launch"><strong>Lokale Demo:</strong> Starte zuerst <code>docker compose --profile demos up --build</code>, dann <a href="@Model.DemoUrl" target="_blank" rel="noreferrer">Demo in neuer Seite öffnen</a>.</p> }
-    @if (reset) { <div class="reset-confirmation" role="status" aria-live="polite"><strong>Station zurückgesetzt.</strong> Der lokale Fortschritt wurde entfernt.</div> }
-    @if (success || Model.IsCompleted) { <div class="success" role="status" aria-live="polite"><strong>Station gesichert.</strong> Die Schutzregel wurde serverseitig bestätigt. @Model.SelectedChallenge.Points Punkte gesammelt.</div><div class="completion-actions">@if (Model.NextChallenge is not null) { <a class="button button-solid" asp-page="/Challenge" asp-route-id="@Model.NextChallenge.Id">Nächste Station</a> }<a class="button" asp-page="/Index">Kursweg ansehen</a></div> }
-    @if (Model.Feedback is not null) { <div class="error" role="alert"><strong>Noch nicht ganz.</strong> @Model.Feedback</div> }
+    <header class="challenge-header"><div><p class="eyebrow">@Model.SelectedChallenge.Category</p><h1>@Model.SelectedChallenge.Title</h1><p class="lead">@Model.SelectedChallenge.LearningGoal</p></div><dl class="challenge-facts"><div><dt>Schwierigkeit</dt><dd>@Model.SelectedChallenge.Difficulty</dd></div><div><dt>Arbeitszeit</dt><dd>@Model.SelectedChallenge.Duration</dd></div><div><dt>Lokale Sandbox</dt><dd>@Model.SelectedChallenge.Id</dd></div></dl></header>
+    @if (Model.DemoUrl is not null) { <p class="demo-launch"><strong>Lokale Demo:</strong> <a href="@Model.DemoUrl" target="_blank" rel="noreferrer">Demo öffnen</a></p> }
+    @if (reset) { <div class="reset-confirmation" role="status" aria-live="polite"><strong>Station zurückgesetzt.</strong> Der lokale Fortschritt und die Punkteabzüge wurden entfernt.</div> }
+    @if (success || Model.IsCompleted) { <div class="success" role="status" aria-live="polite"><strong>Station gesichert.</strong> Serverprüfung bestanden. <strong>@Model.EarnedPoints Punkte</strong> erreicht@if (Model.PenaltyPoints > 0) { <span> (@Model.PenaltyPoints Abzug durch Versuche/Hinweise)</span> }.</div><div class="completion-actions">@if (Model.NextChallenge is not null) { <a class="button button-solid" asp-page="/Challenge" asp-route-id="@Model.NextChallenge.Id">Nächste Station</a> }<a class="button" asp-page="/Index">Kursweg ansehen</a></div> }
+    @if (Model.Feedback is not null) { <div class="error" role="alert"><strong>Noch nicht ganz.</strong> 15 Punkte wurden für diesen Versuch abgezogen. @Model.Feedback</div> }
 
-    <ol class="lesson-flow">
-        <li class="lesson-step">
-            <div class="lesson-node" aria-hidden="true"></div>
-            <section><p class="eyebrow">Verstehen</p><h2>Die lokale Situation</h2><p class="body-copy">@Model.SelectedChallenge.Explanation</p><div class="risk-note"><strong>Intentionally vulnerable</strong><p>Die historische Variante dient ausschliesslich der Erklärung. Sie wird nicht ausgeführt und nie gegen fremde Systeme eingesetzt.</p></div></section>
-        </li>
-        <li class="lesson-step">
-            <div class="lesson-node" aria-hidden="true"></div>
-            <section><p class="eyebrow">Einordnen</p><h2>Warum das wichtig ist</h2><p class="body-copy">@Model.SelectedChallenge.Impact</p></section>
-        </li>
-        <li class="lesson-step action-step">
-            <div class="lesson-node" aria-hidden="true"></div>
-            <section><p class="eyebrow">Absichern</p><h2>Wähle die sichere Massnahme</h2><p class="body-copy">@Model.SelectedChallenge.Task</p><form method="post" asp-page-handler="Check" data-submit-form data-busy-label="Regel wird geprüft …"><fieldset><legend>Welche Regel schützt diese Station?</legend>@foreach (var option in Model.SelectedChallenge.Options) { <label class="option"><input type="radio" name="answer" value="@option.Value" required /> <span>@option.Label</span></label> }</fieldset><button class="button button-solid" type="submit">Antwort prüfen</button></form></section>
-        </li>
-        <li class="lesson-step">
-            <div class="lesson-node" aria-hidden="true"></div>
-            <section><p class="eyebrow">Überprüfen</p><h2>Woran erkennst du den Fix?</h2><p class="body-copy">@Model.SelectedChallenge.ExpectedAfterFix</p><details class="hint"><summary>Hinweis anzeigen</summary><p>@Model.SelectedChallenge.Hints[0]</p></details><details class="hint"><summary>Weiterer Hinweis</summary><p>@Model.SelectedChallenge.Hints[1]</p></details></section>
-        </li>
-        <li class="lesson-step final-step">
-            <div class="lesson-node" aria-hidden="true"></div>
-            <section><p class="eyebrow">Nachvollziehen</p><h2>Die Lösung verstehen</h2><details class="solution"><summary>Lösungserklärung öffnen</summary><p>Der Browser entscheidet nie über den Abschluss. OWASP Forge validiert die gewählte Schutzregel auf dem Server und speichert den Fortschritt nur lokal.</p></details></section>
-        </li>
-    </ol>
+    @if (!Model.ShowQuiz)
+    {
+        <section class="lesson-intro"><p class="eyebrow">Bevor du startest</p><h2>Erst verstehen, dann entscheiden</h2><p class="body-copy">Nimm dir Zeit für den Kontext. Du siehst zuerst, was die historische Variante riskant macht und welches Verhalten nach dem Fix erwartet wird.</p><div class="risk-note"><strong>Intentionally vulnerable</strong><p>@Model.SelectedChallenge.Explanation Die historische Variante wird nie ausgeführt und nie gegen fremde Systeme eingesetzt.</p></div><div class="intro-grid"><div><strong>Sicherheitsauswirkung</strong><p>@Model.SelectedChallenge.Impact</p></div><div><strong>Erwartetes Verhalten</strong><p>@Model.SelectedChallenge.ExpectedAfterFix</p></div></div><a class="button button-solid" asp-page="/Challenge" asp-route-id="@Model.SelectedChallenge.Id" asp-route-step="quiz">Weiter zur Prüfung</a></section>
+    }
+    else
+    {
+        <ol class="lesson-flow"><li class="lesson-step action-step"><div class="lesson-node" aria-hidden="true"></div><section><p class="eyebrow">Absichern</p><h2>Wähle die sichere Massnahme</h2><p class="body-copy">@Model.SelectedChallenge.Task</p><p class="score-note">Mögliche Punkte: @Model.SelectedChallenge.Points · Versuche: @Model.Attempts · Abzug: @Model.PenaltyPoints</p><form method="post" asp-page-handler="Check" data-submit-form data-busy-label="Regel wird geprüft …"><fieldset><legend>Welche Regel schützt diese Station?</legend>@foreach (var option in Model.SelectedChallenge.Options) { <label class="option"><input type="radio" name="answer" value="@option.Value" required /> <span>@option.Label</span></label> }</fieldset><button class="button button-solid" type="submit">Antwort prüfen</button></form></section></li><li class="lesson-step"><div class="lesson-node" aria-hidden="true"></div><section><p class="eyebrow">Nach dem Check</p><h2>Woran erkennst du den Fix?</h2><p class="body-copy">@Model.SelectedChallenge.ExpectedAfterFix</p>@if (Model.HintsUsed == 0) { <form method="post" asp-page-handler="Hint" asp-route-level="1"><button class="button hint-button" type="submit">Ersten Hinweis nutzen (−10 Punkte)</button></form> } else { <details class="hint" open><summary>Hinweis 1</summary><p>@Model.SelectedChallenge.Hints[0]</p></details> } @if (Model.HintsUsed == 1) { <form method="post" asp-page-handler="Hint" asp-route-level="2"><button class="button hint-button" type="submit">Zweiten Hinweis nutzen (−10 Punkte)</button></form> } else if (Model.HintsUsed >= 2) { <details class="hint" open><summary>Hinweis 2</summary><p>@Model.SelectedChallenge.Hints[1]</p></details> }</section></li>@if (Model.CanSeeSolution) { <li class="lesson-step final-step"><div class="lesson-node" aria-hidden="true"></div><section><p class="eyebrow">Nachvollziehen</p><h2>Die Lösung verstehen</h2><details class="solution" open><summary>Lösungserklärung</summary><p>Der Browser entscheidet nie über den Abschluss. OWASP Forge validiert die Schutzregel auf dem Server und speichert den Fortschritt nur lokal.</p></details></section></li> }</ol>
+    }
     <div class="reset-row"><form method="post" asp-page-handler="Reset" data-submit-form data-busy-label="Station wird zurückgesetzt …"><button class="button danger" type="submit">Station zurücksetzen</button></form><a class="owasp-link" href="@Model.SelectedChallenge.OfficialUrl" rel="noreferrer">Offizielle OWASP-Dokumentation ↗</a></div>
 </article>

@@ -2,7 +2,8 @@
 
 ## Implementiert
 
-- Razor-Pages-Plattform auf `127.0.0.1:5080`, sechs OWASP-Challenges, Hinweise, sichere Lösungsauswahl, nachvollziehbaren Reset, Weiterführung und SQLite-Fortschritt.
+- Razor-Pages-Plattform auf `127.0.0.1:5080`, sechs OWASP-Challenges, geführter Intro-/Prüfungsablauf, gestaffelte Hinweise mit Punkteabzug, sichere Lösungsauswahl, nachvollziehbaren Reset, Weiterführung und SQLite-Fortschritt.
+- Neues neutrales SVG-Schildlogo ohne «OF»-Initialen; die Oberfläche bleibt vollständig lokal und ohne externe Assets.
 - Sechs getrennte, statische und interaktive lokale Demo-Container auf `127.0.0.1:5101` bis `5106`; je Demo ein separates internes Docker-Netz, read-only Dateisystem, keine Capabilities und keine ausnutzbare historische Variante.
 - Serverseitige Registry-Validierung, CSRF-Schutz, erweiterte sichere Standardheader, zentrale Fehlerbehandlung, versionierte EF-Core-Migrationen, Playwright-Browser-Flow und CI-Prüfungen für Abhängigkeiten, Compose-Build, Trivy-Dateisystemscan und Gitleaks.
 - README, Beitrags-, Verhaltens- und Sicherheitsrichtlinie sowie Architektur-, Challenge-, Erweiterungs- und Troubleshooting-Dokumentation.
@@ -10,7 +11,7 @@
 ## Ausgeführte Prüfungen
 
 - `dotnet build OwaspForge.sln --no-restore` – erfolgreich, 0 Warnungen/Fehler.
-- `dotnet test OwaspForge.sln --no-restore` – 23/23 erfolgreich.
+- `dotnet test OwaspForge.sln --no-restore` – 24/24 erfolgreich.
 - Playwright Chromium installiert und Browser-Flow tatsächlich ausgeführt – 1/1 erfolgreich.
 - `dotnet format OwaspForge.sln --verify-no-changes` – erfolgreich.
 - `docker compose config` – erfolgreich.
@@ -24,4 +25,4 @@ Die Challenge-Demos sind bewusst sichere, interaktive Erklärungen statt ausfüh
 
 ## Start und nächste Schritte
 
-`dotnet run --project src/OwaspForge.Web`; optional `docker compose up --build`. Als Nächstes: Playwright-UI-Tests und ein lokaler Dependency-/Container-Scanner in CI.
+`dotnet run --project src/OwaspForge.Web`; optional `docker compose up --build`. Hinweise kosten je 10 Punkte, falsche Antworten 15 Punkte; die Lösung wird erst nach einer korrekten Antwort freigeschaltet.

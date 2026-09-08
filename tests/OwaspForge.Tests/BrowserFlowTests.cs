@@ -24,15 +24,18 @@ public sealed class BrowserFlowTests
             await WaitForPlatformAsync(port);
             await using var browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions { Headless = true });
             var page = await browser.NewPageAsync(new BrowserNewPageOptions { ViewportSize = new ViewportSize { Width = 375, Height = 800 } });
+            page.SetDefaultTimeout(5_000);
+            page.SetDefaultNavigationTimeout(5_000);
 
             await page.GotoAsync($"http://127.0.0.1:{port}/");
             Assert.Contains("Sicherheitswissen", await page.Locator("h1").InnerTextAsync(), StringComparison.Ordinal);
             Assert.Equal(6, await page.Locator(".path-station").CountAsync());
 
             await page.GotoAsync($"http://127.0.0.1:{port}/Challenge/sql-injection");
+            await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Weiter zur Prüfung" }).ClickAsync();
             await page.Locator("input[value='parameter']").CheckAsync();
             await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Antwort prüfen" }).ClickAsync();
-            await page.WaitForURLAsync("**/Challenge/sql-injection?solved=true");
+            await page.WaitForURLAsync("**/Challenge/sql-injection?solved=true&step=solution");
             Assert.Contains("Station gesichert", await page.Locator("main").InnerTextAsync(), StringComparison.Ordinal);
         }
         finally

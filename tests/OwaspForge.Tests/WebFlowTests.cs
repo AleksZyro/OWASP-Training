@@ -40,7 +40,7 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         var directPost = await client.PostAsync($"{challengePath}?handler=Check", new FormUrlEncodedContent([new KeyValuePair<string, string>("answer", "parameter")]));
         Assert.Equal(HttpStatusCode.BadRequest, directPost.StatusCode);
 
-        var getResponse = await client.GetAsync(challengePath);
+        var getResponse = await client.GetAsync($"{challengePath}?step=quiz");
         var page = await getResponse.Content.ReadAsStringAsync();
         var token = Regex.Match(page, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
         Assert.False(string.IsNullOrWhiteSpace(token));
@@ -54,7 +54,7 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
             ]));
 
         Assert.Equal(HttpStatusCode.Redirect, completeResponse.StatusCode);
-        Assert.Equal("/Challenge/sql-injection?solved=true", completeResponse.Headers.Location?.OriginalString);
+        Assert.Equal("/Challenge/sql-injection?solved=true&step=solution", completeResponse.Headers.Location?.OriginalString);
 
         var home = await client.GetStringAsync("/");
         Assert.Contains("Abgeschlossen", home, StringComparison.Ordinal);
@@ -110,7 +110,6 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         var page = await client.GetStringAsync($"/Challenge/{challengeId}");
 
         Assert.Contains($"http://127.0.0.1:{port}", page, StringComparison.Ordinal);
-        Assert.Contains("docker compose --profile demos up --build", page, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -142,6 +141,39 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         {
             Directory.Delete(directory, recursive: true);
         }
+    }
+
+    [Fact]
+    public async Task Challenge_requires_the_intro_step_and_deducts_for_hints_and_wrong_answers()
+    {
+        const string challengePath = "/Challenge/xss";
+        var intro = await client.GetStringAsync(challengePath);
+        Assert.Contains("Weiter zur Prüfung", intro, StringComparison.Ordinal);
+        Assert.DoesNotContain("Lösungserklärung", intro, StringComparison.Ordinal);
+
+        var quizResponse = await client.GetAsync($"{challengePath}?step=quiz");
+        var quiz = await quizResponse.Content.ReadAsStringAsync();
+        var token = Regex.Match(quiz, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
+        Assert.Contains("Antwort prüfen", quiz, StringComparison.Ordinal);
+
+        var wrongResponse = await client.PostAsync($"{challengePath}?handler=Check", new FormUrlEncodedContent([
+            new KeyValuePair<string, string>("__RequestVerificationToken", token),
+            new KeyValuePair<string, string>("answer", "raw"),
+        ]));
+        var wrongPage = await wrongResponse.Content.ReadAsStringAsync();
+        Assert.Contains("15 Punkte wurden", wrongPage, StringComparison.Ordinal);
+        Assert.DoesNotContain("Lösungserklärung", wrongPage, StringComparison.Ordinal);
+
+        var wrongToken = Regex.Match(wrongPage, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
+        var hintResponse = await client.PostAsync($"{challengePath}?handler=Hint", new FormUrlEncodedContent([
+            new KeyValuePair<string, string>("__RequestVerificationToken", wrongToken),
+            new KeyValuePair<string, string>("level", "1"),
+        ]));
+        Assert.Equal(HttpStatusCode.Redirect, hintResponse.StatusCode);
+        Assert.Equal("/Challenge/xss?step=quiz&hint=1", hintResponse.Headers.Location?.OriginalString);
+        var hintedPage = await client.GetStringAsync(hintResponse.Headers.Location!.OriginalString);
+        Assert.Contains("Hinweis 1", hintedPage, StringComparison.Ordinal);
+        Assert.DoesNotContain("Lösungserklärung", hintedPage, StringComparison.Ordinal);
     }
 }
 
