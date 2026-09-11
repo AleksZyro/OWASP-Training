@@ -49,6 +49,12 @@ docker compose config
 
 OWASP Forge never scans hosts, stores real credentials, executes user code or accepts arbitrary URLs. The SSRF lesson allows only fixed mock identifiers. Containers are read-only, capability-free, on dedicated internal Docker networks and exposed only through fixed localhost ports. See the [security model](docs/SECURITY-MODEL.md).
 
+Before a public or school deployment, complete and review the operator identity, contact details and legal basis in [docs/PRIVACY.md](docs/PRIVACY.md). The bundled local reference instance is not an online service.
+
+## Release and operator documentation
+
+[Privacy and operator checklist](docs/PRIVACY.md) · [Security Policy](SECURITY.md) · [Changelog](CHANGELOG.md) · [License](LICENSE)
+
 ## Known Limitations
 
 - The sandbox is a didactic model, not a production hardening assessment.

@@ -17,7 +17,7 @@ Startseite mit Fortschritt, Challenge-Detailseiten mit Lerninhalt, gestaffelten 
 
 ## Sicherheitsmodell
 
-Die Plattform bindet standardmässig nur an `127.0.0.1`. Client-Daten werden nie als Abschlussnachweis vertraut; die Lösung wird serverseitig gegen eine Registry-Regel validiert. Es gibt keine Shell-Ausführung, keine frei wählbaren URLs und keine Host-Scans. Container sind read-only, ohne Capabilities und mit `network_mode: none`; sie enthalten nur lokale Erklärseiten. Alle historischen unsicheren Varianten sind als **intentionally vulnerable** gekennzeichnet und werden nicht ausgeführt.
+Die Plattform bindet standardmässig nur an `127.0.0.1`. Client-Daten werden nie als Abschlussnachweis vertraut; die Lösung wird serverseitig gegen eine Registry-Regel validiert. Es gibt keine Shell-Ausführung, keine frei wählbaren URLs und keine Host-Scans. Container sind read-only, ohne Capabilities und in getrennten internen Docker-Netzen ohne externe Peers; sie enthalten nur lokale Erklärseiten. Alle historischen unsicheren Varianten sind als **intentionally vulnerable** gekennzeichnet und werden nicht ausgeführt.
 
 ## Teststrategie
 
@@ -62,3 +62,7 @@ Die Detailseite startet mit einem erklärenden Kontext und führt erst über «W
 ## Kursausbau: drei Fragen pro Station
 
 Jede der sechs OWASP-Stationen enthält nun drei aufeinander aufbauende Fragen. Eine Station gilt erst als abgeschlossen, wenn alle drei Antworten serverseitig korrekt sind; fehlende oder falsche Antworten werden einzeln bewertet. Damit entstehen 18 Lernschritte bei weiterhin sechs klaren Kurswegen. Weitere Stationen können künftig als zusätzliche `ChallengeDefinition`-Einträge ergänzt werden, ohne die Fortschritts- oder Sicherheitsgrenzen zu verändern.
+
+## Release-Härtung
+
+Vor einem öffentlichen oder schulischen Release müssen Betreiberidentität und Kontaktangaben in `docs/PRIVACY.md` ergänzt, Docker-Build und Smoke-Test mit einer verfügbaren Engine ausgeführt und die CI-Prüfungen erfolgreich abgeschlossen werden. Die CI startet alle sechs Demo-Container kurzzeitig, prüft nur feste localhost-Ports und räumt sie anschliessend auf. Release-Metadaten, MIT-Lizenz und Changelog sind enthalten; eine rechtliche Prüfung der konkreten Betreiberinstanz bleibt erforderlich.

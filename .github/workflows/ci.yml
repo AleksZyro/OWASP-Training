@@ -20,6 +20,18 @@ jobs:
       - run: dotnet list OwaspForge.sln package --vulnerable --include-transitive
       - run: docker compose --profile demos config
       - run: docker compose --profile demos build
+      - name: Start local platform and challenge demos
+        run: docker compose --profile demos up -d
+      - name: Smoke-test localhost endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          for port in 5080 5101 5102 5103 5104 5105 5106; do
+            curl --fail --silent --show-error --retry 20 --retry-delay 1 "http://127.0.0.1:${port}/" > /dev/null
+          done
+      - name: Stop local containers
+        if: always()
+        run: docker compose --profile demos down --volumes --remove-orphans
       - uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: fs

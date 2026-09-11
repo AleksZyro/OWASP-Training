@@ -21,9 +21,15 @@ Die optionalen Demo-Stationen starten getrennt mit `docker compose --profile dem
 
 Keine Host-Scans, echten Zugangsdaten, frei wählbaren URLs, Benutzercode oder externen Ziele. Der SSRF-Teil akzeptiert nur feste Mock-Kennungen. Container sind read-only und ohne Capabilities; Plattform und jede Demo liegen ausschliesslich in internen Docker-Netzen und sind nur über ihren festen localhost-Port erreichbar. Details: [Sicherheitsmodell](docs/SECURITY-MODEL.md).
 
+Für eine öffentliche oder schulische Instanz müssen die Betreiberidentität, Kontaktangaben und Rechtsgrundlage in [docs/PRIVACY.md](docs/PRIVACY.md) ergänzt und geprüft werden. Die gebündelte lokale Referenzinstanz ist nicht als Onlinedienst gedacht.
+
 ## Weitere Dokumentation
 
 [Architektur](docs/ARCHITECTURE.md) · [Datenschutz und Betreiber-Checkliste](docs/PRIVACY.md) · [Neue Challenges](docs/ADDING-CHALLENGES.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Challenge-Leitfaden](docs/CHALLENGES.md)
+
+## Release- und Betriebsdokumentation
+
+[Datenschutz und Betreiber-Checkliste](docs/PRIVACY.md) · [Security Policy](SECURITY.md) · [Changelog](CHANGELOG.md) · [Lizenz](LICENSE)
 
 ## Qualität
 
