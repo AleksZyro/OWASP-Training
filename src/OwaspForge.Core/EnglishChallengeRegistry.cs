@@ -17,17 +17,32 @@ public sealed class EnglishChallengeRegistry
     private static ChallengeDefinition Create(string id, string title, string category, string difficulty, string duration, int points, string goal, string explanation, string task, string impact, string expected, string url, string hintOne, string hintTwo, params (string Value, string Label, string Feedback)[] options) =>
         new(id, title, category, difficulty, duration, points, goal, explanation, task, impact, expected, url, [hintOne, hintTwo], options.Select(option => new ChallengeOption(option.Value, option.Label, option.Feedback)).ToArray(), options[1].Value)
         {
-            Questions = QuestionPrompts(id, task).Select(prompt => new ChallengeQuestion(prompt)).ToArray()
+            Questions = QuestionSet(id, task),
+            SolutionExplanation = SolutionText(id)
         };
 
-    private static IReadOnlyList<string> QuestionPrompts(string id, string task) => id switch
+    private static IReadOnlyList<ChallengeQuestion> QuestionSet(string id, string task) => id switch
     {
-        "sql-injection" => [task, "Which separation prevents input from becoming SQL code?", "What must the server enforce for every search, regardless of the browser?"],
-        "xss" => [task, "How should a local comment be rendered safely in an HTML page?", "Which output decision prevents markup from executing as code?"],
-        "idor" => [task, "Which check decides whether the requested profile may be read?", "Why is an object ID from a URL never proof of authorization?"],
-        "authentication" => [task, "Which combination protects a local account from password and session abuse?", "Which control limits repeated failed sign-in attempts?"],
-        "file-upload" => [task, "Which rules apply before storing a local file?", "Where should a non-executable upload be stored safely?"],
-        "ssrf" => [task, "How does the server limit requests to the intended mock environment?", "Why is a fixed identifier allowlist safer than a client-supplied URL?"],
-        _ => [task]
+        "sql-injection" => [Question(task, "parameter", "Use a parameterized query with a bound value", "concat", "Build SQL with string concatenation", "filter", "Block special characters only"), Question("Which separation prevents input from becoming SQL code?", "parameter", "Keep SQL code and values separate with a bound parameter", "concat", "Insert the value directly into SQL text", "filter", "Use a short blocklist"), Question("What must the server enforce for every search, regardless of the browser?", "parameter", "Execute the query with a parameter", "filter", "Reject only suspicious characters", "concat", "Insert input into the SQL string")],
+        "xss" => [Question(task, "encode", "HTML-encode for the output context", "raw", "Render text as raw HTML", "client", "Filter only in the browser"), Question("How should a local comment be rendered safely in an HTML page?", "encode", "Render it as text with context-aware output encoding", "raw", "Render it as untrusted HTML", "client", "Filter it after browser rendering"), Question("Which output decision prevents markup from executing as code?", "encode", "Avoid raw HTML for user input", "client", "Rely on a client-side filter", "raw", "Render the input with Html.Raw")],
+        "idor" => [Question(task, "owner", "Compare current identity with object ownership", "hidden", "Store the ID in a hidden field", "route", "Only rename the object ID"), Question("Which check decides whether the requested profile may be read?", "owner", "Compare ownership or role on the server", "route", "Rename the route", "hidden", "Trust a hidden field"), Question("Why is an object ID from a URL never proof of authorization?", "owner", "The client can change the ID freely", "hidden", "Hidden fields are invisible", "route", "A longer URL is safer")],
+        "authentication" => [Question(task, "secure-auth", "Combine hashing, session checks and rate limiting", "plain", "Compare the password directly", "captcha", "Add only a CAPTCHA"), Question("Which combination protects a local account from password and session abuse?", "secure-auth", "Use a password hash, server session and limit", "captcha", "Show only a CAPTCHA", "plain", "Compare the plain-text password"), Question("Which control limits repeated failed sign-in attempts?", "secure-auth", "Add a server-side rate limit", "plain", "Allow more plain-text comparisons", "captcha", "Display the limit only in the browser")],
+        "file-upload" => [Question(task, "upload-policy", "Allowlist, size limit, generated name, outside web root", "extension", "Check only the extension in the web root", "rename", "Only rename the file"), Question("Which rules apply before storing a local file?", "upload-policy", "Validate type, size, name and location on the server", "rename", "Only assign a new name", "extension", "Check only the extension"), Question("Where should a non-executable upload be stored safely?", "upload-policy", "Under a generated name outside the web root", "extension", "In the public web root with a safe extension", "rename", "In the web root with a new name")],
+        "ssrf" => [Question(task, "allowlist", "Accept only fixed local mock identifiers from an allowlist", "blocklist", "Block a few host names", "redirect", "Check redirects only afterwards"), Question("How does the server limit requests to the intended mock environment?", "allowlist", "Use a fixed identifier allowlist without client URLs", "redirect", "Inspect the response after an arbitrary request", "blocklist", "Block only known host names"), Question("Why is a fixed identifier allowlist safer than a client-supplied URL?", "allowlist", "There is no user-selected network path", "blocklist", "Unknown targets remain possible", "redirect", "The first request already happened")],
+        _ => [Question(task, "secure", "Use a secure server-side check", "unsafe", "Use the unsafe variant", "unknown", "Use an unclear variant")]
+    };
+
+    private static ChallengeQuestion Question(string prompt, string safeValue, string safeLabel, string firstValue, string firstLabel, string secondValue, string secondLabel) =>
+        new(prompt, [new(firstValue, firstLabel, "This option does not reliably protect the station."), new(safeValue, safeLabel, string.Empty), new(secondValue, secondLabel, "This measure is not sufficient on its own.")], safeValue);
+
+    private static string SolutionText(string id) => id switch
+    {
+        "sql-injection" => "Parameters keep SQL structure separate from input values. The input remains data and cannot become a second query.",
+        "xss" => "Context-aware encoding renders comments as text. Raw HTML should only be used for trusted, fixed content.",
+        "idor" => "The server checks identity, role and ownership before reading an object. A URL ID is never accepted as authorization.",
+        "authentication" => "Password hashing, server-side session checks and rate limiting protect different parts of the sign-in flow together.",
+        "file-upload" => "An allowlist, size limit and generated name reduce risk. Storage outside the web root prevents direct execution or delivery.",
+        "ssrf" => "A fixed mock allowlist prevents input from selecting a network path. The demo processes only registered local identifiers.",
+        _ => "The protection rule is validated on the server and stored locally."
     };
 }

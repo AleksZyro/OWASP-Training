@@ -50,17 +50,32 @@ public sealed class ChallengeRegistry
     private static ChallengeDefinition Create(string id, string title, string category, string difficulty, string duration, int points, string goal, string explanation, string task, string impact, string expected, string url, string hintOne, string hintTwo, params (string Value, string Label, string Feedback)[] options) =>
         new(id, title, category, difficulty, duration, points, goal, explanation, task, impact, expected, url, [hintOne, hintTwo], options.Select(option => new ChallengeOption(option.Value, option.Label, option.Feedback)).ToArray(), options[1].Value)
         {
-            Questions = QuestionPrompts(id, task).Select(prompt => new ChallengeQuestion(prompt)).ToArray()
+            Questions = QuestionSet(id, task),
+            SolutionExplanation = SolutionText(id)
         };
 
-    private static IReadOnlyList<string> QuestionPrompts(string id, string task) => id switch
+    private static IReadOnlyList<ChallengeQuestion> QuestionSet(string id, string task) => id switch
     {
-        "sql-injection" => [task, "Welche Trennung verhindert, dass Eingaben als SQL-Code interpretiert werden?", "Was muss der Server bei jeder Suchanfrage unabhängig vom Browser erzwingen?"],
-        "xss" => [task, "Wie wird ein lokaler Kommentar sicher in einer HTML-Seite dargestellt?", "Welche Ausgabeentscheidung verhindert, dass Markup als Code ausgeführt wird?"],
-        "idor" => [task, "Welche Prüfung entscheidet, ob das angeforderte Profil gelesen werden darf?", "Warum reicht eine Objekt-ID aus der URL niemals als Berechtigungsnachweis?"],
-        "authentication" => [task, "Welche Kombination schützt ein lokales Konto gegen Passwort- und Sessionmissbrauch?", "Welche Kontrolle begrenzt wiederholte fehlgeschlagene Anmeldeversuche?"],
-        "file-upload" => [task, "Welche Regeln gelten vor dem Speichern einer lokalen Datei?", "Wo sollte eine nicht ausführbare Upload-Datei sicher abgelegt werden?"],
-        "ssrf" => [task, "Wie begrenzt der Server Abrufe auf die vorgesehene Mock-Umgebung?", "Warum ist eine feste Kennungs-Allowlist sicherer als eine URL vom Client?"],
-        _ => [task]
+        "sql-injection" => [Question(task, "parameter", "Parametrisierte Abfrage mit gebundenem Wert", "concat", "SQL-Text durch String-Verkettung bauen", "filter", "Nur Sonderzeichen sperren"), Question("Welche Trennung verhindert, dass Eingaben als SQL-Code interpretiert werden?", "parameter", "SQL-Code und Wert durch einen gebundenen Parameter trennen", "concat", "Wert direkt in den SQL-String einsetzen", "filter", "Eine kurze Blocklist verwenden"), Question("Was muss der Server bei jeder Suchanfrage unabhängig vom Browser erzwingen?", "parameter", "Die Abfrage mit einem Parameter ausführen", "filter", "Nur verdächtige Zeichen ablehnen", "concat", "Die Eingabe in SQL-Text einfügen")],
+        "xss" => [Question(task, "encode", "Kontextgerecht HTML-encodieren", "raw", "Text als HTML-Rohinhalt ausgeben", "client", "Nur im Browser filtern"), Question("Wie wird ein lokaler Kommentar sicher in einer HTML-Seite dargestellt?", "encode", "Als Text mit passendem Output-Encoding rendern", "raw", "Als ungeprüftes HTML rendern", "client", "Erst nach dem Rendern im Browser filtern"), Question("Welche Ausgabeentscheidung verhindert, dass Markup als Code ausgeführt wird?", "encode", "Roh-HTML für Benutzereingaben vermeiden", "client", "Eine Client-Filterung voraussetzen", "raw", "Die Eingabe mit Html.Raw ausgeben")],
+        "idor" => [Question(task, "owner", "Aktuelle Identität gegen Objektbesitz prüfen", "hidden", "ID in einem versteckten Feld speichern", "route", "Objekt-ID nur umbenennen"), Question("Welche Prüfung entscheidet, ob das angeforderte Profil gelesen werden darf?", "owner", "Besitz oder Rolle serverseitig vergleichen", "route", "Die Route anders benennen", "hidden", "Auf ein verstecktes Feld vertrauen"), Question("Warum reicht eine Objekt-ID aus der URL niemals als Berechtigungsnachweis?", "owner", "Der Client darf die ID frei verändern", "hidden", "Versteckte Felder sind unsichtbar", "route", "Eine längere URL wäre sicherer")],
+        "authentication" => [Question(task, "secure-auth", "Hashing, Session-Prüfung und Rate Limit kombinieren", "plain", "Passwort direkt vergleichen", "captcha", "Nur ein Captcha hinzufügen"), Question("Welche Kombination schützt ein lokales Konto gegen Passwort- und Sessionmissbrauch?", "secure-auth", "Passwort-Hash, serverseitige Session und Limit verwenden", "captcha", "Nur ein Captcha anzeigen", "plain", "Das Passwort im Klartext vergleichen"), Question("Welche Kontrolle begrenzt wiederholte fehlgeschlagene Anmeldeversuche?", "secure-auth", "Ein serverseitiges Rate Limit ergänzen", "plain", "Weitere Klartextvergleiche erlauben", "captcha", "Das Limit nur im Browser anzeigen")],
+        "file-upload" => [Question(task, "upload-policy", "Allowlist, Grössenlimit, generierter Name, ausserhalb des Webroots", "extension", "Nur die Endung prüfen und im Webroot speichern", "rename", "Die Datei nur umbenennen"), Question("Welche Regeln gelten vor dem Speichern einer lokalen Datei?", "upload-policy", "Typ, Grösse, Name und Speicherort serverseitig prüfen", "rename", "Nur einen neuen Dateinamen vergeben", "extension", "Nur die Endung prüfen"), Question("Wo sollte eine nicht ausführbare Upload-Datei sicher abgelegt werden?", "upload-policy", "Unter generiertem Namen ausserhalb des Webroots", "extension", "Im öffentlichen Webroot mit passender Endung", "rename", "Im Webroot mit geändertem Namen")],
+        "ssrf" => [Question(task, "allowlist", "Nur feste lokale Mock-Kennungen aus einer Allowlist akzeptieren", "blocklist", "Einige Hostnamen blockieren", "redirect", "Weiterleitungen erst danach prüfen"), Question("Wie begrenzt der Server Abrufe auf die vorgesehene Mock-Umgebung?", "allowlist", "Eine feste Kennungs-Allowlist ohne Client-URL verwenden", "redirect", "Die Antwort nach einer beliebigen Anfrage prüfen", "blocklist", "Nur bekannte Hostnamen sperren"), Question("Warum ist eine feste Kennungs-Allowlist sicherer als eine URL vom Client?", "allowlist", "Es gibt keinen frei wählbaren Netzwerkausgang", "blocklist", "Unbekannte Ziele bleiben trotzdem möglich", "redirect", "Der erste Abruf findet bereits statt")],
+        _ => [Question(task, "secure", "Sichere serverseitige Prüfung", "unsafe", "Unsichere Variante", "unknown", "Unklare Variante")]
+    };
+
+    private static ChallengeQuestion Question(string prompt, string safeValue, string safeLabel, string firstValue, string firstLabel, string secondValue, string secondLabel) =>
+        new(prompt, [new(firstValue, firstLabel, "Diese Variante schützt die Station nicht zuverlässig."), new(safeValue, safeLabel, string.Empty), new(secondValue, secondLabel, "Diese Massnahme reicht allein nicht aus.")], safeValue);
+
+    private static string SolutionText(string id) => id switch
+    {
+        "sql-injection" => "Parameter trennen SQL-Struktur und Eingabewert. Dadurch bleibt die Eingabe ein Wert und kann keine eigene Abfrage ausführen.",
+        "xss" => "Kontextgerechtes Encoding behandelt Kommentare als Text. Rohes HTML darf nur für vertrauenswürdige, fest definierte Inhalte verwendet werden.",
+        "idor" => "Der Server vergleicht Identität, Rolle und Objektbesitz vor dem Lesen. Eine URL-ID wird nie als Berechtigung akzeptiert.",
+        "authentication" => "Ein Passwort-Hash, serverseitige Session-Prüfung und ein Rate Limit schützen unterschiedliche Teile des Anmeldevorgangs gemeinsam.",
+        "file-upload" => "Allowlist, Grössenlimit und ein generierter Name begrenzen das Risiko. Speicherung ausserhalb des Webroots verhindert direkte Ausführung oder Auslieferung.",
+        "ssrf" => "Eine feste Mock-Allowlist verhindert, dass Eingaben einen Netzwerkpfad bestimmen. Die Demo verarbeitet nur registrierte lokale Kennungen.",
+        _ => "Die Schutzregel wird serverseitig geprüft und lokal gespeichert."
     };
 }

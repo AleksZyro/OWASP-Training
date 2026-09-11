@@ -37,6 +37,18 @@ public sealed class ChallengeValidatorTests
     }
 
     [Fact]
+    public void Questions_have_distinct_options_and_a_course_specific_solution()
+    {
+        Assert.All(registry.All, challenge =>
+        {
+            Assert.Equal(3, challenge.Questions.Count);
+            Assert.All(challenge.Questions, question => Assert.Equal(3, question.Options.Count));
+            Assert.False(string.IsNullOrWhiteSpace(challenge.SolutionExplanation));
+            Assert.True(challenge.Questions.Select(question => string.Join('|', question.Options.Select(option => option.Label))).Distinct().Count() > 1);
+        });
+    }
+
+    [Fact]
     public void Every_insecure_option_has_a_learning_explanation()
     {
         var insecureOptions = registry.All

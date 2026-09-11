@@ -43,7 +43,7 @@ public sealed class EnglishChallengeModel(EnglishChallengeRegistry registry, Cha
         var completedIds = await progressService.CompletedIdsAsync(cancellationToken);
         IsCompleted = completedIds.Contains(id);
         ShowQuiz = Request.Query["step"] == "quiz" || Request.Query["solved"] == "true";
-        CanSeeSolution = IsCompleted || Request.Query["solved"] == "true";
+        CanSeeSolution = IsCompleted;
         var record = await progressService.FindAsync(id, cancellationToken);
         PenaltyPoints = record?.PenaltyPoints ?? 0;
         HintsUsed = record?.HintsUsed ?? 0;
@@ -77,7 +77,7 @@ public sealed class EnglishChallengeModel(EnglishChallengeRegistry registry, Cha
         HintsUsed = currentRecord?.HintsUsed ?? 0;
         Attempts = currentRecord?.Attempts ?? 0;
 
-        var selectedOption = SelectedChallenge.Options.SingleOrDefault(option => option.Value == submittedAnswers.FirstOrDefault());
+        var selectedOption = SelectedChallenge.Questions.FirstOrDefault()?.Options.SingleOrDefault(option => option.Value == submittedAnswers.FirstOrDefault());
         Feedback = selectedOption is { Feedback.Length: > 0 }
             ? $"{selectedOption.Feedback} {incorrectCount} answer(s) were incorrect; {15 * incorrectCount} points were deducted."
             : $"Not quite. {incorrectCount} answer(s) were incorrect; {15 * incorrectCount} points were deducted. Use a hint and identify the rule enforced on the server.";

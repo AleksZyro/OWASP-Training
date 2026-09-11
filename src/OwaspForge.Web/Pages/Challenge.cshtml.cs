@@ -42,7 +42,7 @@ public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidato
         var completedIds = await progressService.CompletedIdsAsync(cancellationToken);
         IsCompleted = completedIds.Contains(id);
         ShowQuiz = Request.Query["step"] == "quiz" || Request.Query["solved"] == "true";
-        CanSeeSolution = IsCompleted || Request.Query["solved"] == "true";
+        CanSeeSolution = IsCompleted;
         var record = await progressService.FindAsync(id, cancellationToken);
         PenaltyPoints = record?.PenaltyPoints ?? 0;
         HintsUsed = record?.HintsUsed ?? 0;
@@ -73,7 +73,7 @@ public sealed class ChallengeModel(ChallengeRegistry registry, ChallengeValidato
         PenaltyPoints = currentRecord?.PenaltyPoints ?? 0;
         HintsUsed = currentRecord?.HintsUsed ?? 0;
         Attempts = currentRecord?.Attempts ?? 0;
-        var selectedOption = SelectedChallenge.Options.SingleOrDefault(option => option.Value == submittedAnswers.FirstOrDefault());
+        var selectedOption = SelectedChallenge.Questions.FirstOrDefault()?.Options.SingleOrDefault(option => option.Value == submittedAnswers.FirstOrDefault());
         Feedback = selectedOption is { Feedback.Length: > 0 }
             ? $"{selectedOption.Feedback} {incorrectCount} Antwort(en) waren noch nicht korrekt; dafür wurden {15 * incorrectCount} Punkte abgezogen."
             : $"Noch nicht ganz. {incorrectCount} Antwort(en) waren noch nicht korrekt; dafür wurden {15 * incorrectCount} Punkte abgezogen. Nutze einen Hinweis und prüfe, welche Regel auf dem Server durchgesetzt werden muss.";

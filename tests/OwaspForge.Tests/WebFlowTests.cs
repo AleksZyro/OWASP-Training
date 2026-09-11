@@ -98,6 +98,7 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains(expectedContent, page, StringComparison.Ordinal);
+        Assert.DoesNotContain("href=\"/docs/PRIVACY.md\"", page, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -108,6 +109,16 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Contains("Aleksandar Zyro", page, StringComparison.Ordinal);
         Assert.Contains("keine eigene juristische Person", page, StringComparison.Ordinal);
         Assert.Contains("Rechtsgrundlage", page, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("/challenge/sql-injection?solved=true", "Lösungserklärung")]
+    [InlineData("/en/challenge/sql-injection?solved=true", "Solution explanation")]
+    public async Task Solution_is_not_unlocked_by_a_query_string(string path, string solutionText)
+    {
+        var page = await client.GetStringAsync(path);
+
+        Assert.DoesNotContain(solutionText, page, StringComparison.Ordinal);
     }
 
     [Theory]
