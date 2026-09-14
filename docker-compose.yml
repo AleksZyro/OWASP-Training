@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: src/OwaspForge.Web/Dockerfile
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
     ports: ["127.0.0.1:5080:8080"]
     read_only: true
     tmpfs: ["/tmp", "/app/data"]
