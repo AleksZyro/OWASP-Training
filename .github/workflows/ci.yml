@@ -32,7 +32,7 @@ jobs:
       - name: Stop local containers
         if: always()
         run: docker compose --profile demos down --volumes --remove-orphans
-      - uses: aquasecurity/trivy-action@0.33.1
+      - uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: .
