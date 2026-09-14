@@ -1,48 +1,137 @@
 namespace OwaspForge.Core;
 
-/// <summary>English learning content for the same stable challenge identifiers.</summary>
+/// <summary>English learning content with the same stable challenge identifiers and rules.</summary>
 public sealed class EnglishChallengeRegistry
 {
-    private static readonly IReadOnlyList<ChallengeDefinition> Definitions =
-    [
-        Create("sql-injection", "SQL Injection", "A03: Injection", "Easy", "20 min", 100, "Learn why values must never be concatenated into SQL text.", "The historical example is intentionally vulnerable because it concatenates a string. Parameters keep query code and values separate.", "Choose the measure that makes a local search query safe.", "Local sample data could be exposed outside the intended search.", "Input is treated only as a value.", "https://owasp.org/www-community/attacks/SQL_Injection", "Parameters separate code, type and value.", "Validation does not replace parameters.", ("concat", "Escape input before building SQL", "Escaping is context-dependent and can break when a query changes."), ("parameter", "Use a parameterized query with a bound value", ""), ("filter", "Block special characters", "Blocklists miss variants and can reject valid input.")),
-        Create("xss", "Cross-Site Scripting", "A03: Injection", "Easy", "15 min", 100, "Learn that output must be encoded for its context.", "The historical display is intentionally vulnerable because it interprets text as HTML. The secure view renders the comment as text.", "Choose the safe output method for a local comment.", "Untrusted code could run in the learning page's browser context.", "The comment is text; markup does not execute.", "https://owasp.org/www-community/attacks/xss/", "Razor encodes ordinary text output by default.", "Do not use raw HTML for user input.", ("raw", "Render text as raw HTML", "Raw HTML allows input to become markup or script."), ("encode", "HTML-encode for the output context", ""), ("client", "Filter only in the browser", "Client-side checks can be bypassed; output must be safe on the server.")),
-        Create("idor", "Broken Access Control / IDOR", "A01: Broken Access Control", "Medium", "25 min", 150, "Check access to every object on the server.", "The historical example trusts an object ID in a URL and is intentionally vulnerable. The secure version compares owner and current identity on the server.", "Choose the check before reading a local profile.", "Another learner's local sample data could become visible.", "Only the authorized demo user can access their own profile.", "https://owasp.org/Top10/A01_2021-Broken_Access_Control/", "An ID is not authorization.", "Check ownership or role on the server.", ("hidden", "Store the ID in a hidden field", "Hidden fields are client-controlled and are not authorization."), ("owner", "Compare current identity with object ownership", ""), ("route", "Rename the object ID", "Renaming an ID does not add an authorization check.")),
-        Create("authentication", "Insecure Authentication", "A07: Identification and Authentication Failures", "Medium", "30 min", 150, "Combine password hashing, session checks and rate limits.", "The historical login is intentionally vulnerable because it compares a demo string directly. The secure version uses a password hasher, server-side sessions and failed-attempt limits.", "Choose the complete local protection package.", "Accounts could be exposed through trivial checks or repeated attempts.", "Passwords are never stored in plain text; sessions and failed attempts are checked.", "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/", "A hash is not encryption.", "Rate limits complement secure password storage.", ("plain", "Compare and retain the password directly", "Plain-text passwords and direct comparison endanger accounts."), ("secure-auth", "Hashing, server-side session checks and rate limiting", ""), ("captcha", "Add only a CAPTCHA", "A CAPTCHA alone does not secure stored passwords or sessions.")),
-        Create("file-upload", "Insecure File Upload", "A04: Insecure Design", "Medium", "25 min", 150, "Validate type, size and name, then store outside static content.", "The historical upload is intentionally vulnerable because it accepts name and path directly. The secure version generates a server name and stores only allowed small files outside the web root.", "Choose the secure local upload rule.", "Unexpected files could be reachable or exhaust storage.", "Only allowlisted, size-limited files are stored outside the web root and never executed.", "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload", "An extension alone does not prove a file type.", "Use an allowlist, a size limit and a generated name.", ("extension", "Check only the extension and store in the web root", "Extensions are easy to manipulate and web-root files can be directly reachable."), ("upload-policy", "Allowlist, size limit, generated name and storage outside web root", ""), ("rename", "Only rename the uploaded file", "Renaming does not add content validation or a size limit.")),
-        Create("ssrf", "SSRF Basics", "A10: Server-Side Request Forgery", "Medium", "20 min", 150, "Limit server-side requests to explicit local mock targets.", "The historical request idea is intentionally vulnerable because it accepts any address. OWASP Forge never calls a URL supplied by a client: the secure demo uses only a fixed local mock identifier.", "Choose the secure request rule.", "A server could otherwise request internal or external targets in the wrong context.", "Only a registered mock resource is processed; arbitrary URLs are rejected and containers have no network.", "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/", "A blocklist can miss unknown targets.", "Use a fixed allowlist of names, not client URLs.", ("blocklist", "Block a few host names", "Blocklists miss alternate representations and new internal targets."), ("allowlist", "Accept only fixed local mock identifiers from an allowlist", ""), ("redirect", "Check redirects only after the request", "Checking after a freely chosen first request is too late."))
-    ];
+    private static readonly IReadOnlyList<ChallengeDefinition> Definitions = new ChallengeRegistry().All.Select(Translate).ToArray();
+
     public IReadOnlyList<ChallengeDefinition> All => Definitions;
+
     public ChallengeDefinition? Find(string id) => Definitions.SingleOrDefault(item => StringComparer.Ordinal.Equals(item.Id, id));
-    private static ChallengeDefinition Create(string id, string title, string category, string difficulty, string duration, int points, string goal, string explanation, string task, string impact, string expected, string url, string hintOne, string hintTwo, params (string Value, string Label, string Feedback)[] options) =>
-        new(id, title, category, difficulty, duration, points, goal, explanation, task, impact, expected, url, [hintOne, hintTwo], options.Select(option => new ChallengeOption(option.Value, option.Label, option.Feedback)).ToArray(), options[1].Value)
+
+    private static ChallengeDefinition Translate(ChallengeDefinition source)
+    {
+        var copy = source with
         {
-            Questions = QuestionSet(id, task),
-            SolutionExplanation = SolutionText(id)
+            Title = Title(source.Id),
+            Difficulty = source.Difficulty switch { "Einfach" => "Easy", "Mittel" => "Medium", _ => source.Difficulty },
+            Duration = source.Duration.Replace("Min.", "min", StringComparison.Ordinal),
+            LearningGoal = Goal(source.Id),
+            Explanation = "The historical example is intentionally vulnerable for local learning only. The secure approach is evaluated on the server and never targets external systems.",
+            Task = "Choose the server-side measure that applies the protection rule.",
+            Impact = "Without this control, local sample data or the learning flow could be exposed to an avoidable risk.",
+            ExpectedAfterFix = "The local sandbox accepts only the secure server-side behaviour described in this station.",
+            Hints = ["Focus on a server-side control, not a client-side promise.", "Prefer allowlists, minimal permissions and safe defaults."],
+            Course = source.Course switch { "Eingabe und Ausgabe" => "Input and Output", "Identität und Zugriffe" => "Identity and Access", "Sichere Architektur" => "Secure Architecture", _ => "Operations and Supply Chain" },
+            SolutionExplanation = Solution(source.Id),
+            Options = source.Options.Select(TranslateOption).ToArray(),
+            Questions = source.Questions.Select((question, index) => new ChallengeQuestion(Prompt(index), question.Options.Select(TranslateOption).ToArray(), question.CorrectOption)).ToArray()
         };
 
-    private static IReadOnlyList<ChallengeQuestion> QuestionSet(string id, string task) => id switch
+        return copy;
+    }
+
+    private static ChallengeOption TranslateOption(ChallengeOption option) => new(option.Value, OptionLabel(option.Value), string.IsNullOrEmpty(option.Feedback) ? string.Empty : "This option does not reliably protect the station.");
+
+    private static string Prompt(int index) => index switch
     {
-        "sql-injection" => [Question(task, "parameter", "Use a parameterized query with a bound value", "concat", "Build SQL with string concatenation", "filter", "Block special characters only"), Question("Which separation prevents input from becoming SQL code?", "parameter", "Keep SQL code and values separate with a bound parameter", "concat", "Insert the value directly into SQL text", "filter", "Use a short blocklist"), Question("What must the server enforce for every search, regardless of the browser?", "parameter", "Execute the query with a parameter", "filter", "Reject only suspicious characters", "concat", "Insert input into the SQL string")],
-        "xss" => [Question(task, "encode", "HTML-encode for the output context", "raw", "Render text as raw HTML", "client", "Filter only in the browser"), Question("How should a local comment be rendered safely in an HTML page?", "encode", "Render it as text with context-aware output encoding", "raw", "Render it as untrusted HTML", "client", "Filter it after browser rendering"), Question("Which output decision prevents markup from executing as code?", "encode", "Avoid raw HTML for user input", "client", "Rely on a client-side filter", "raw", "Render the input with Html.Raw")],
-        "idor" => [Question(task, "owner", "Compare current identity with object ownership", "hidden", "Store the ID in a hidden field", "route", "Only rename the object ID"), Question("Which check decides whether the requested profile may be read?", "owner", "Compare ownership or role on the server", "route", "Rename the route", "hidden", "Trust a hidden field"), Question("Why is an object ID from a URL never proof of authorization?", "owner", "The client can change the ID freely", "hidden", "Hidden fields are invisible", "route", "A longer URL is safer")],
-        "authentication" => [Question(task, "secure-auth", "Combine hashing, session checks and rate limiting", "plain", "Compare the password directly", "captcha", "Add only a CAPTCHA"), Question("Which combination protects a local account from password and session abuse?", "secure-auth", "Use a password hash, server session and limit", "captcha", "Show only a CAPTCHA", "plain", "Compare the plain-text password"), Question("Which control limits repeated failed sign-in attempts?", "secure-auth", "Add a server-side rate limit", "plain", "Allow more plain-text comparisons", "captcha", "Display the limit only in the browser")],
-        "file-upload" => [Question(task, "upload-policy", "Allowlist, size limit, generated name, outside web root", "extension", "Check only the extension in the web root", "rename", "Only rename the file"), Question("Which rules apply before storing a local file?", "upload-policy", "Validate type, size, name and location on the server", "rename", "Only assign a new name", "extension", "Check only the extension"), Question("Where should a non-executable upload be stored safely?", "upload-policy", "Under a generated name outside the web root", "extension", "In the public web root with a safe extension", "rename", "In the web root with a new name")],
-        "ssrf" => [Question(task, "allowlist", "Accept only fixed local mock identifiers from an allowlist", "blocklist", "Block a few host names", "redirect", "Check redirects only afterwards"), Question("How does the server limit requests to the intended mock environment?", "allowlist", "Use a fixed identifier allowlist without client URLs", "redirect", "Inspect the response after an arbitrary request", "blocklist", "Block only known host names"), Question("Why is a fixed identifier allowlist safer than a client-supplied URL?", "allowlist", "There is no user-selected network path", "blocklist", "Unknown targets remain possible", "redirect", "The first request already happened")],
-        _ => [Question(task, "secure", "Use a secure server-side check", "unsafe", "Use the unsafe variant", "unknown", "Use an unclear variant")]
+        0 => "Choose the secure action for this local station.",
+        1 => "Which additional control belongs to this protection?",
+        2 => "Which decision must the server enforce?",
+        3 => "How is this rule applied consistently?",
+        4 => "Which measure strengthens the protection further?",
+        _ => "How would you verify this protection rule?"
     };
 
-    private static ChallengeQuestion Question(string prompt, string safeValue, string safeLabel, string firstValue, string firstLabel, string secondValue, string secondLabel) =>
-        new(prompt, [new(firstValue, firstLabel, "This option does not reliably protect the station."), new(safeValue, safeLabel, string.Empty), new(secondValue, secondLabel, "This measure is not sufficient on its own.")], safeValue);
-
-    private static string SolutionText(string id) => id switch
+    private static string Title(string id) => id switch
     {
-        "sql-injection" => "Parameters keep SQL structure separate from input values. The input remains data and cannot become a second query.",
-        "xss" => "Context-aware encoding renders comments as text. Raw HTML should only be used for trusted, fixed content.",
-        "idor" => "The server checks identity, role and ownership before reading an object. A URL ID is never accepted as authorization.",
-        "authentication" => "Password hashing, server-side session checks and rate limiting protect different parts of the sign-in flow together.",
-        "file-upload" => "An allowlist, size limit and generated name reduce risk. Storage outside the web root prevents direct execution or delivery.",
-        "ssrf" => "A fixed mock allowlist prevents input from selecting a network path. The demo processes only registered local identifiers.",
+        "sql-injection" => "SQL Injection",
+        "xss" => "Cross-Site Scripting",
+        "file-upload" => "Insecure File Upload",
+        "authentication" => "Insecure Authentication",
+        "session-csrf" => "Sessions and CSRF",
+        "idor" => "Broken Access Control / IDOR",
+        "ssrf" => "SSRF Basics",
+        "cryptography-secrets" => "Cryptography and Secrets",
+        "security-misconfiguration" => "Security Misconfiguration",
+        "dependencies-sbom" => "Dependencies and SBOM",
+        "supply-chain-integrity" => "Supply Chain Integrity",
+        "logging-monitoring" => "Logging and Monitoring",
+        _ => id
+    };
+
+    private static string Goal(string id) => id switch
+    {
+        "sql-injection" => "Learn how parameterized queries keep values separate from SQL code.",
+        "xss" => "Learn how context-aware encoding keeps untrusted text from executing.",
+        "file-upload" => "Learn to validate uploads and keep them outside the web root.",
+        "authentication" => "Learn to combine password hashing, sessions and rate limiting.",
+        "session-csrf" => "Learn to protect authenticated actions with secure sessions and anti-forgery checks.",
+        "idor" => "Learn to authorize every object access on the server.",
+        "ssrf" => "Learn to restrict server-side requests to fixed local mock targets.",
+        "cryptography-secrets" => "Learn to protect local secrets and use established cryptography.",
+        "security-misconfiguration" => "Learn secure defaults for errors, headers and local service binding.",
+        "dependencies-sbom" => "Learn to inventory, assess and maintain project dependencies.",
+        "supply-chain-integrity" => "Learn to verify artifact origin and protect release controls.",
+        "logging-monitoring" => "Learn to record security events without logging secrets.",
+        _ => "Learn a secure server-side control."
+    };
+
+    private static string Solution(string id) => id switch
+    {
+        "sql-injection" => "Parameters keep query structure separate from values; minimal database permissions and tests add defence in depth.",
+        "xss" => "Context-aware output encoding is the primary defence. A Content Security Policy is a useful additional layer.",
+        "file-upload" => "Allowlisted content, limits, generated names and storage outside the web root keep uploads non-executable.",
+        "authentication" => "Password hashing, secure server sessions, renewal and rate limits protect different stages of sign-in.",
+        "session-csrf" => "Secure cookie attributes, server-side session invalidation and anti-forgery validation protect state changes together.",
+        "idor" => "The server compares identity, role and ownership for every object access; an object ID is never authorization.",
+        "ssrf" => "A fixed mock allowlist and disabled container networking prevent user input from choosing a network path.",
+        "cryptography-secrets" => "Keep keys outside source control, hash passwords and use established cryptographic libraries and defaults.",
+        "security-misconfiguration" => "Safe defaults include neutral error pages, central security headers, localhost-only binding and reviewed configuration.",
+        "dependencies-sbom" => "An inventory makes components visible; assess advisories, test changes and remove unused dependencies.",
+        "supply-chain-integrity" => "Verifiable origin, integrity checks and controlled releases protect the build and delivery chain.",
+        "logging-monitoring" => "Structured protected logs support investigation without exposing passwords, tokens or other secrets.",
         _ => "The protection rule is validated on the server and stored locally."
+    };
+
+    private static string OptionLabel(string value) => value switch
+    {
+        "parameter" => "Use bound parameters and type-safe values",
+        "concat" => "Build code with string concatenation",
+        "filter" => "Rely only on a blocklist",
+        "encode" => "Encode output for its context",
+        "raw" => "Render user input as raw HTML",
+        "client" => "Rely only on browser-side filtering",
+        "upload-policy" => "Apply the complete server-side upload policy",
+        "extension" => "Trust the file extension or public web root",
+        "rename" => "Only rename the file",
+        "secure-auth" => "Use the complete server-side authentication control",
+        "plain" => "Compare or retain a password directly",
+        "captcha" => "Add only a CAPTCHA",
+        "csrf-session" => "Validate anti-forgery and secure session controls",
+        "client-token" => "Validate the token only in the browser",
+        "referer" => "Trust one request header alone",
+        "owner" => "Authorize ownership or role on the server",
+        "hidden" => "Trust a hidden field",
+        "route" => "Only rename or obscure the route",
+        "allowlist" => "Use a fixed server-side allowlist",
+        "blocklist" => "Block only known targets",
+        "redirect" => "Validate only after the request",
+        "secret-store" => "Use established cryptography and separate key storage",
+        "hardcode" => "Keep the secret in source code",
+        "custom" => "Invent a custom cryptographic approach",
+        "secure-default" => "Use reviewed secure defaults",
+        "debug" => "Expose debug details",
+        "hide" => "Hide only the browser message",
+        "inventory" => "Inventory, assess and test components",
+        "ignore" => "Leave components unreviewed",
+        "latest" => "Update everything without testing",
+        "verify" => "Verify origin and integrity before use",
+        "trust" => "Trust an artifact by name alone",
+        "after" => "Verify only after use",
+        "structured" => "Log relevant events without secrets",
+        "secrets" => "Log passwords or tokens for diagnosis",
+        "none" => "Do not record security events",
+        _ => "Use the secure server-side control"
     };
 }

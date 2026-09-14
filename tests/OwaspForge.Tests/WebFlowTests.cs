@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using OwaspForge.Core;
 using OwaspForge.Web.Data;
 
 namespace OwaspForge.Tests;
@@ -45,15 +46,9 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         var token = Regex.Match(page, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
         Assert.False(string.IsNullOrWhiteSpace(token));
 
-        var completeResponse = await client.PostAsync(
-            $"{challengePath}?handler=Check",
-            new FormUrlEncodedContent(
-            [
-                new KeyValuePair<string, string>("__RequestVerificationToken", token),
-                new KeyValuePair<string, string>("answers[0]", "parameter"),
-                new KeyValuePair<string, string>("answers[1]", "parameter"),
-                new KeyValuePair<string, string>("answers[2]", "parameter"),
-            ]));
+        var formValues = new List<KeyValuePair<string, string>> { new("__RequestVerificationToken", token) };
+        formValues.AddRange(new ChallengeRegistry().Find("sql-injection")!.Questions.Select((question, index) => new KeyValuePair<string, string>($"answers[{index}]", question.CorrectOption)));
+        var completeResponse = await client.PostAsync($"{challengePath}?handler=Check", new FormUrlEncodedContent(formValues));
 
         Assert.Equal(HttpStatusCode.Redirect, completeResponse.StatusCode);
         Assert.Equal("/Challenge/sql-injection?solved=true&step=solution", completeResponse.Headers.Location?.OriginalString);
@@ -178,16 +173,19 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         var quiz = await quizResponse.Content.ReadAsStringAsync();
         var token = Regex.Match(quiz, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
         Assert.Contains("Antworten prüfen", quiz, StringComparison.Ordinal);
-        Assert.Contains("3 Fragen", quiz, StringComparison.Ordinal);
+        Assert.Contains("6 Fragen", quiz, StringComparison.Ordinal);
 
         var wrongResponse = await client.PostAsync($"{challengePath}?handler=Check", new FormUrlEncodedContent([
             new KeyValuePair<string, string>("__RequestVerificationToken", token),
             new KeyValuePair<string, string>("answers[0]", "raw"),
             new KeyValuePair<string, string>("answers[1]", "raw"),
             new KeyValuePair<string, string>("answers[2]", "raw"),
+            new KeyValuePair<string, string>("answers[3]", "raw"),
+            new KeyValuePair<string, string>("answers[4]", "raw"),
+            new KeyValuePair<string, string>("answers[5]", "raw"),
         ]));
         var wrongPage = await wrongResponse.Content.ReadAsStringAsync();
-        Assert.Contains("45 Punkte", wrongPage, StringComparison.Ordinal);
+        Assert.Contains("90 Punkte", wrongPage, StringComparison.Ordinal);
         Assert.DoesNotContain("Lösungserklärung", wrongPage, StringComparison.Ordinal);
 
         var wrongToken = Regex.Match(wrongPage, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;

@@ -9,9 +9,8 @@
 </section>
 
 <section class="course-progress" aria-label="Dein Lernfortschritt">
-    <div><p class="eyebrow">Dein Lernweg</p><h2>@Model.CompletedCount von @Model.Challenges.Count Stationen abgeschlossen</h2></div>
+    <div><p class="eyebrow">Dein Lernweg</p><h2>@Model.CompletedCount von @Model.Challenges.Count Stationen abgeschlossen</h2><p class="progress-copy">Vier Kurse · 72 Fragen · kein Zertifikat</p></div>
     <progress value="@Model.CompletedCount" max="@Model.Challenges.Count">@Model.CompletedCount von @Model.Challenges.Count</progress>
-    <p class="progress-copy">@Model.TotalPoints Punkte gesammelt · kein Zertifikat</p>
 </section>
 
 @if (Model.NextChallenge is not null)
@@ -31,24 +30,29 @@ else
 }
 
 <section class="course-section" aria-labelledby="challenges-title">
-    <div class="section-heading"><div><p class="eyebrow">Kursweg</p><h2 id="challenges-title">Wähle deine nächste Lab-Station</h2></div><p>Jede Antwort wird serverseitig geprüft.</p></div>
-    <ol class="learning-path">
-        @foreach (var item in Model.Challenges)
-        {
-            var complete = Model.CompletedIds.Contains(item.Id);
-            var started = Model.StartedIds.Contains(item.Id);
-            var status = complete ? "Abgeschlossen" : started ? "In Bearbeitung" : "Bereit";
-            var statusClass = complete ? "done" : started ? "active" : "open";
-            <li class="path-station @statusClass">
-                <div class="path-node" aria-hidden="true">@(complete ? "✓" : "")</div>
-                <article class="station-card">
-                    <div class="station-topline"><span class="category">@item.Category</span><span class="status @statusClass">@status</span></div>
-                    <h3>@item.Title</h3>
-                    <p>@item.LearningGoal</p>
-                    <div class="station-details"><span>@item.Difficulty</span><span>@item.Duration</span><span>@item.Points Punkte</span></div>
-                    <a class="station-link" asp-page="/Challenge" asp-route-id="@item.Id">Station öffnen <span aria-hidden="true">→</span></a>
-                </article>
-            </li>
-        }
-    </ol>
+    <div class="section-heading"><div><p class="eyebrow">Kursweg</p><h2 id="challenges-title">Lerne in klaren Themenblöcken</h2></div><p>Jede Antwort wird serverseitig geprüft.</p></div>
+    @foreach (var course in Model.Courses)
+    {
+        <section class="course-module" aria-labelledby="course-@course.Key.Replace(" ", "-").ToLowerInvariant()">
+            <header class="course-module-header"><div><p class="eyebrow">@course.Key</p><h3 id="course-@course.Key.Replace(" ", "-").ToLowerInvariant()">Drei Stationen · 18 Fragen</h3></div></header>
+            <ol class="learning-path">
+                @foreach (var item in course)
+                {
+                    var complete = Model.CompletedIds.Contains(item.Id);
+                    var started = Model.StartedIds.Contains(item.Id);
+                    var status = complete ? "Abgeschlossen" : started ? "In Bearbeitung" : "Bereit";
+                    var statusClass = complete ? "done" : started ? "active" : "open";
+                    <li class="path-station @statusClass">
+                        <article class="station-card">
+                            <div class="station-topline"><span class="category">@item.Category</span><span class="status @statusClass">@status</span></div>
+                            <h4>@item.Title</h4>
+                            <p>@item.LearningGoal</p>
+                            <div class="station-details"><span>@item.Difficulty</span><span>@item.Duration</span><span>6 Fragen</span></div>
+                            <a class="station-link" asp-page="/Challenge" asp-route-id="@item.Id">Station öffnen <span aria-hidden="true">→</span></a>
+                        </article>
+                    </li>
+                }
+            </ol>
+        </section>
+    }
 </section>

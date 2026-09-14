@@ -1,15 +1,15 @@
 # OWASP Forge
 
-Lokale ASP.NET-Core-Lernplattform für SQL Injection, XSS, IDOR, Authentifizierung, Datei-Upload und SSRF. **Kein Scanner, kein Exploit-Werkzeug und keine Sicherheitszertifizierung.** Historische Varianten sind *intentionally vulnerable* markiert und werden nicht ausgeführt.
+Lokale ASP.NET-Core-Lernplattform für zwölf OWASP-Themen, von Injection und Zugriffskontrolle bis zu Lieferkette und Monitoring. **Kein Scanner, kein Exploit-Werkzeug und keine Sicherheitszertifizierung.** Historische Varianten sind *intentionally vulnerable* markiert und werden nicht ausgeführt.
 
 ## Funktionen
 
-- sechs lokale OWASP-Kurse mit je drei aufeinander aufbauenden Fragen und gestaffelten Hinweisen (18 Lernschritte)
+- vier lokale Kurse mit je drei Stationen und sechs aufeinander aufbauenden Fragen (12 Stationen, 72 Lernschritte)
 - serverseitige Prüfung der Antworten mit einer Erklärung zu jeder falschen Massnahme
 - lokaler Fortschritt mit Punkten, Status «nicht begonnen», «in Bearbeitung» und Reset pro Challenge
 - klare Weiterführung zur nächsten Station, Sprachwechsel innerhalb einer offenen Challenge und lokaler Datenschutzhinweis
 - absichtlich unsichere Varianten werden nur erklärt und nie ausgeführt
-- sechs getrennte lokale Demo-Stationen mit sicheren Interaktionen und festem localhost-Port
+- sechs getrennte lokale Demo-Stationen mit sicheren Interaktionen und festem localhost-Port; sechs zusätzliche sichere Konzeptstationen ohne Netzwerkzugriff
 
 ## Start
 

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Playwright;
+using OwaspForge.Core;
 
 namespace OwaspForge.Tests;
 
@@ -29,14 +30,14 @@ public sealed class BrowserFlowTests
 
             await page.GotoAsync($"http://127.0.0.1:{port}/");
             Assert.Contains("Sicherheitswissen", await page.Locator("h1").InnerTextAsync(), StringComparison.Ordinal);
-            Assert.Equal(6, await page.Locator(".path-station").CountAsync());
+            Assert.Equal(12, await page.Locator(".path-station").CountAsync());
 
             await page.GotoAsync($"http://127.0.0.1:{port}/Challenge/sql-injection");
             await page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Weiter zur Prüfung" }).ClickAsync();
-            var safeAnswers = page.Locator("input[value='parameter']");
-            for (var questionIndex = 0; questionIndex < 3; questionIndex++)
+            var questions = new ChallengeRegistry().Find("sql-injection")!.Questions;
+            for (var questionIndex = 0; questionIndex < questions.Count; questionIndex++)
             {
-                await safeAnswers.Nth(questionIndex).CheckAsync();
+                await page.Locator($".question-block:nth-of-type({questionIndex + 1}) input[value='{questions[questionIndex].CorrectOption}']").CheckAsync();
             }
             await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Antworten prüfen" }).ClickAsync();
             await page.WaitForURLAsync("**/Challenge/sql-injection?solved=true&step=solution");

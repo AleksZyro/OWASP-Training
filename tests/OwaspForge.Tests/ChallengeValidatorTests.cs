@@ -7,7 +7,25 @@ public sealed class ChallengeValidatorTests
     private readonly ChallengeRegistry registry = new();
 
     [Fact]
-    public void Registry_contains_exactly_the_six_mvp_challenges() => Assert.Equal(6, registry.All.Count);
+    public void Registry_contains_twelve_stations_in_four_courses()
+    {
+        Assert.Equal(12, registry.All.Count);
+        Assert.Equal(4, registry.All.Select(challenge => challenge.Course).Distinct().Count());
+        Assert.All(registry.All.GroupBy(challenge => challenge.Course), course => Assert.Equal(3, course.Count()));
+    }
+
+    [Fact]
+    public void English_registry_keeps_the_same_twelve_station_question_structure()
+    {
+        var english = new EnglishChallengeRegistry();
+
+        Assert.Equal(registry.All.Select(challenge => challenge.Id), english.All.Select(challenge => challenge.Id));
+        Assert.All(english.All, challenge =>
+        {
+            Assert.Equal(6, challenge.Questions.Count);
+            Assert.All(challenge.Questions, question => Assert.All(question.Options, option => Assert.DoesNotContain("Sichere", option.Label, StringComparison.Ordinal)));
+        });
+    }
 
     [Theory]
     [InlineData("sql-injection", "parameter")]
@@ -27,13 +45,15 @@ public sealed class ChallengeValidatorTests
     }
 
     [Fact]
-    public void Each_course_requires_all_three_questions()
+    public void Each_station_requires_all_six_questions()
     {
         var validator = new ChallengeValidator(registry);
+        var answers = registry.Find("sql-injection")!.Questions.Select(question => question.CorrectOption).Cast<string?>().ToArray();
 
-        Assert.True(validator.IsSolved("sql-injection", ["parameter", "parameter", "parameter"]));
-        Assert.False(validator.IsSolved("sql-injection", ["parameter", "parameter"]));
-        Assert.Equal(1, validator.CountIncorrect("sql-injection", ["parameter", "concat", "parameter"]));
+        Assert.True(validator.IsSolved("sql-injection", answers));
+        Assert.False(validator.IsSolved("sql-injection", answers[..5]));
+        answers[1] = "concat";
+        Assert.Equal(1, validator.CountIncorrect("sql-injection", answers));
     }
 
     [Fact]
@@ -41,7 +61,7 @@ public sealed class ChallengeValidatorTests
     {
         Assert.All(registry.All, challenge =>
         {
-            Assert.Equal(3, challenge.Questions.Count);
+            Assert.Equal(6, challenge.Questions.Count);
             Assert.All(challenge.Questions, question => Assert.Equal(3, question.Options.Count));
             Assert.False(string.IsNullOrWhiteSpace(challenge.SolutionExplanation));
             Assert.True(challenge.Questions.Select(question => string.Join('|', question.Options.Select(option => option.Label))).Distinct().Count() > 1);
@@ -51,9 +71,8 @@ public sealed class ChallengeValidatorTests
     [Fact]
     public void Every_insecure_option_has_a_learning_explanation()
     {
-        var insecureOptions = registry.All
-            .SelectMany(challenge => challenge.Options)
-            .Where(option => option.Value != "parameter" && option.Value != "encode" && option.Value != "owner" && option.Value != "secure-auth" && option.Value != "upload-policy" && option.Value != "allowlist");
+        var insecureOptions = registry.All.SelectMany(challenge => challenge.Questions)
+            .SelectMany(question => question.Options.Where(option => option.Value != question.CorrectOption));
 
         Assert.All(insecureOptions, option => Assert.False(string.IsNullOrWhiteSpace(option.Feedback)));
     }

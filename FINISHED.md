@@ -2,7 +2,7 @@
 
 ## Implementiert
 
-- Razor-Pages-Plattform auf `127.0.0.1:5080`, sechs OWASP-Kurse mit je drei aufeinander aufbauenden Fragen (18 Lernschritte), geführtem Intro-/Prüfungsablauf, gestaffelten Hinweisen mit Punkteabzug, sicherer Lösungsauswahl, nachvollziehbarem Reset, Weiterführung und SQLite-Fortschritt.
+- Razor-Pages-Plattform auf `127.0.0.1:5080`, vier OWASP-Kurse mit je drei Stationen und je sechs aufeinander aufbauenden Fragen (12 Stationen, 72 Lernschritte), geführtem Intro-/Prüfungsablauf, gestaffelten Hinweisen mit Punkteabzug, sicherer Lösungsauswahl, nachvollziehbarem Reset, Weiterführung und SQLite-Fortschritt.
 - Jede Frage hat eigene Optionen und jede Station eine fachbezogene Lösungserklärung; Antworten werden gemeinsam serverseitig validiert.
 - Neues neutrales SVG-Schildlogo ohne «OF»-Initialen; die Oberfläche bleibt vollständig lokal und ohne externe Assets.
 - Sechs getrennte, statische und interaktive lokale Demo-Container auf `127.0.0.1:5101` bis `5106`; je Demo ein separates internes Docker-Netz, read-only Dateisystem, keine Capabilities und keine ausnutzbare historische Variante.
@@ -21,6 +21,8 @@
 - Lokaler Paket-Vulnerability-Scan nach Testabhängigkeits-Upgrade – keine anfälligen Pakete.
 - Regressionstest bestätigt, dass `?solved=true` die Lösung nicht vor einer serverseitig bestätigten Antwort freischaltet.
 - Codex-Security-Diff-Scan über die Demo-, Browser- und localhost-Port-Änderungen: keine berichtspflichtigen Findings.
+- Nach dem Kursausbau: `dotnet build --configuration Release` – erfolgreich, 0 Warnungen/Fehler; `dotnet test --configuration Release --no-build` – 29/29 erfolgreich.
+- Lokaler Smoke-Test nach dem Kursausbau: Startseite, englische Startseite sowie neue deutsche und englische Stationen mit HTTP 200 geprüft; Startseite zeigt vier Kursblöcke, zwölf Stationen und 72 Fragen ohne horizontalen Überlauf im lokalen Browser.
 
 ## Einschränkungen
 

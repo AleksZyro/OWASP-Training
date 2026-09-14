@@ -2,7 +2,7 @@
 
 ## Projektziel
 
-OWASP Forge ist eine lokale Lernplattform für sechs grundlegende OWASP-Risiken. Sie ist kein Scanner und kein Angriffswerkzeug: Demos, Prüfungen und Docker-Container sind ausschliesslich für die mitgelieferten Lerninhalte vorgesehen.
+OWASP Forge ist eine lokale Lernplattform für zwölf grundlegende OWASP-Themen in vier Kursen. Sie ist kein Scanner und kein Angriffswerkzeug: Demos, Prüfungen und Docker-Container sind ausschliesslich für die mitgelieferten Lerninhalte vorgesehen.
 
 ## Architektur
 
@@ -13,7 +13,7 @@ OWASP Forge ist eine lokale Lernplattform für sechs grundlegende OWASP-Risiken.
 
 ## MVP
 
-Startseite mit Fortschritt, Challenge-Detailseiten mit Lerninhalt, gestaffelten Hinweisen, einer serverseitig geprüften Antwortauswahl mit spezifischem Feedback, Reset und einer einblendbaren Lösung. Die sechs IDs sind `sql-injection`, `xss`, `idor`, `authentication`, `file-upload` und `ssrf`.
+Startseite mit Fortschritt, Challenge-Detailseiten mit Lerninhalt, gestaffelten Hinweisen, einer serverseitig geprüften Antwortauswahl mit spezifischem Feedback, Reset und einer einblendbaren Lösung. Vier Kursblöcke enthalten je drei Stationen mit je sechs Fragen (72 Fragen): Eingabe und Ausgabe (`sql-injection`, `xss`, `file-upload`), Identität und Zugriffe (`authentication`, `session-csrf`, `idor`), sichere Architektur (`ssrf`, `cryptography-secrets`, `security-misconfiguration`) sowie Betrieb und Lieferkette (`dependencies-sbom`, `supply-chain-integrity`, `logging-monitoring`). Die sechs ursprünglichen Demo-Stationen behalten ihre isolierten, statischen lokalen Docker-Demos; die sechs Ergänzungen sind sichere Konzeptstationen ohne Netzwerkzugriff.
 
 ## Sicherheitsmodell
 
@@ -25,7 +25,7 @@ Die Plattform bindet standardmässig nur an `127.0.0.1`. Client-Daten werden nie
 
 ## Definition of Done
 
-Die sechs Challenges werden angezeigt, können abgeschlossen und zurückgesetzt werden, speichern Fortschritt lokal in SQLite und haben Tests. Dokumentation, Docker Compose und GitHub Actions erklären bzw. automatisieren die lokale sichere Ausführung.
+Alle zwölf Stationen werden angezeigt, können abgeschlossen und zurückgesetzt werden, speichern Fortschritt lokal in SQLite und haben Tests. Dokumentation, Docker Compose und GitHub Actions erklären bzw. automatisieren die lokale sichere Ausführung.
 
 ## Risiken und Grenzen
 
@@ -59,9 +59,9 @@ Jede der sechs Stationen erhält eine eigene, statische Demo-App in einem separa
 
 Die Detailseite startet mit einem erklärenden Kontext und führt erst über «Weiter zur Prüfung» zur Antwortauswahl. Hinweise werden einzeln und in Reihenfolge freigeschaltet; jeder Hinweis kostet 10 Punkte. Falsche Antworten werden serverseitig protokolliert und kosten 15 Punkte. Die Anzeige begrenzt die erzielten Punkte auf mindestens null. Die Lösungserklärung bleibt bis zur korrekt validierten Antwort verborgen; bereits abgeschlossene Challenges lassen sich nicht durch nachträgliche Formularaufrufe verändern. Die Regeln gelten identisch in deutscher und englischer Oberfläche.
 
-## Kursausbau: drei Fragen pro Station
+## Kursausbau: zwölf Stationen mit je sechs Fragen
 
-Jede der sechs OWASP-Stationen enthält nun drei aufeinander aufbauende Fragen. Eine Station gilt erst als abgeschlossen, wenn alle drei Antworten serverseitig korrekt sind; fehlende oder falsche Antworten werden einzeln bewertet. Damit entstehen 18 Lernschritte bei weiterhin sechs klaren Kurswegen. Weitere Stationen können künftig als zusätzliche `ChallengeDefinition`-Einträge ergänzt werden, ohne die Fortschritts- oder Sicherheitsgrenzen zu verändern.
+Jede Station enthält sechs aufeinander aufbauende Fragen. Eine Station gilt erst als abgeschlossen, wenn alle sechs Antworten serverseitig korrekt sind; fehlende oder falsche Antworten werden einzeln bewertet. Damit entstehen 72 Lernschritte in vier klaren Kursblöcken. Weitere Stationen können künftig als zusätzliche `ChallengeDefinition`-Einträge ergänzt werden, ohne die Fortschritts- oder Sicherheitsgrenzen zu verändern.
 
 ## Release-Härtung
 

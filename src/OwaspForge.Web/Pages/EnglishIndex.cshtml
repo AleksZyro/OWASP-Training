@@ -9,9 +9,8 @@
 </section>
 
 <section class="course-progress" aria-label="Your learning progress">
-    <div><p class="eyebrow">Your learning path</p><h2>@Model.CompletedCount of @Model.Challenges.Count stations completed</h2></div>
+    <div><p class="eyebrow">Your learning path</p><h2>@Model.CompletedCount of @Model.Challenges.Count stations completed</h2><p class="progress-copy">Four courses · 72 questions · not a certification</p></div>
     <progress value="@Model.CompletedCount" max="@Model.Challenges.Count">@Model.CompletedCount of @Model.Challenges.Count</progress>
-    <p class="progress-copy">@Model.TotalPoints points earned · not a certification</p>
 </section>
 
 @if (Model.NextChallenge is not null)
@@ -31,24 +30,29 @@ else
 }
 
 <section class="course-section" aria-labelledby="challenges-title">
-    <div class="section-heading"><div><p class="eyebrow">Course path</p><h2 id="challenges-title">Choose your next lab station</h2></div><p>Every answer is verified on the server.</p></div>
-    <ol class="learning-path">
-        @foreach (var item in Model.Challenges)
-        {
-            var complete = Model.CompletedIds.Contains(item.Id);
-            var started = Model.StartedIds.Contains(item.Id);
-            var status = complete ? "Completed" : started ? "In progress" : "Ready";
-            var statusClass = complete ? "done" : started ? "active" : "open";
-            <li class="path-station @statusClass">
-                <div class="path-node" aria-hidden="true">@(complete ? "✓" : "")</div>
-                <article class="station-card">
-                    <div class="station-topline"><span class="category">@item.Category</span><span class="status @statusClass">@status</span></div>
-                    <h3>@item.Title</h3>
-                    <p>@item.LearningGoal</p>
-                    <div class="station-details"><span>@item.Difficulty</span><span>@item.Duration</span><span>@item.Points points</span></div>
-                    <a class="station-link" href="/en/challenge/@item.Id">Open station <span aria-hidden="true">→</span></a>
-                </article>
-            </li>
-        }
-    </ol>
+    <div class="section-heading"><div><p class="eyebrow">Course path</p><h2 id="challenges-title">Learn in clear topic blocks</h2></div><p>Every answer is verified on the server.</p></div>
+    @foreach (var course in Model.Courses)
+    {
+        <section class="course-module" aria-labelledby="course-@course.Key.Replace(" ", "-").ToLowerInvariant()">
+            <header class="course-module-header"><div><p class="eyebrow">@course.Key</p><h3 id="course-@course.Key.Replace(" ", "-").ToLowerInvariant()">Three stations · 18 questions</h3></div></header>
+            <ol class="learning-path">
+                @foreach (var item in course)
+                {
+                    var complete = Model.CompletedIds.Contains(item.Id);
+                    var started = Model.StartedIds.Contains(item.Id);
+                    var status = complete ? "Completed" : started ? "In progress" : "Ready";
+                    var statusClass = complete ? "done" : started ? "active" : "open";
+                    <li class="path-station @statusClass">
+                        <article class="station-card">
+                            <div class="station-topline"><span class="category">@item.Category</span><span class="status @statusClass">@status</span></div>
+                            <h4>@item.Title</h4>
+                            <p>@item.LearningGoal</p>
+                            <div class="station-details"><span>@item.Difficulty</span><span>@item.Duration</span><span>6 questions</span></div>
+                            <a class="station-link" href="/en/challenge/@item.Id">Open station <span aria-hidden="true">→</span></a>
+                        </article>
+                    </li>
+                }
+            </ol>
+        </section>
+    }
 </section>

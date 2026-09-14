@@ -17,6 +17,7 @@ public sealed record ChallengeDefinition(
     IReadOnlyList<ChallengeOption> Options,
     string CorrectOption)
 {
+    public string Course { get; init; } = string.Empty;
     public IReadOnlyList<ChallengeQuestion> Questions { get; init; } = [];
     public string SolutionExplanation { get; init; } = string.Empty;
 }

@@ -14,6 +14,7 @@ public sealed class IndexModel(ChallengeRegistry registry, ProgressService progr
     public int MaximumPoints => Challenges.Sum(challenge => challenge.Points);
     public int TotalPoints => Challenges.Where(challenge => CompletedIds.Contains(challenge.Id)).Sum(challenge => Math.Max(0, challenge.Points - (Penalties.TryGetValue(challenge.Id, out var penalty) ? penalty : 0)));
     public ChallengeDefinition? NextChallenge => Challenges.FirstOrDefault(challenge => !CompletedIds.Contains(challenge.Id));
+    public IReadOnlyList<IGrouping<string, ChallengeDefinition>> Courses => Challenges.GroupBy(challenge => challenge.Course).ToArray();
 
     public async Task OnGetAsync(CancellationToken cancellationToken)
     {
