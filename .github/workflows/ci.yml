@@ -24,9 +24,9 @@ jobs:
         run: docker compose --profile demos up -d
       - name: Inspect local containers
         run: |
-          docker compose --profile demos ps
-          docker compose --profile demos port platform 8080
-          docker inspect owasp-training-platform-1 --format '{{.State.Status}} {{.State.ExitCode}} {{json .NetworkSettings.Ports}}'
+    docker compose --profile demos ps
+    docker compose --profile demos port platform 8080 || true
+    docker inspect owasp-training-platform-1 --format '{{.State.Status}} {{.State.ExitCode}} {{json .NetworkSettings.Ports}}' || true
       - name: Smoke-test localhost endpoints
         shell: bash
         run: |
