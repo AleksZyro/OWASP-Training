@@ -8,6 +8,7 @@ services:
       ASPNETCORE_HTTP_PORTS: "8080"
     expose: ["8080"]
     ports: ["127.0.0.1:5080:8080"]
+    networks: [platform-host]
     read_only: true
     tmpfs: ["/tmp", "/app/data"]
     security_opt: ["no-new-privileges:true"]
@@ -55,6 +56,7 @@ services:
     networks: [demo-ssrf]
 
 networks:
+  platform-host: {}
   default: { internal: true }
   demo-sql: { internal: true }
   demo-xss: { internal: true }
