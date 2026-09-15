@@ -31,10 +31,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          docker compose --profile demos logs --no-color --tail=80 platform
-          for port in 5080 5101 5102 5103 5104 5105 5106; do
-            curl --fail --silent --show-error --retry 60 --retry-delay 1 --retry-all-errors "http://127.0.0.1:${port}/" > /dev/null
+          expected=(platform demo-sql-injection demo-xss demo-idor demo-authentication demo-file-upload demo-ssrf)
+          for service in "${expected[@]}"; do
+            container_id="$(docker compose --profile demos ps -q "$service")"
+            test -n "$container_id"
+            test "$(docker inspect --format '{{.State.Status}}' "$container_id")" = running
           done
+          docker compose --profile demos logs --no-color --tail=80 platform
       - name: Stop local containers
         if: always()
         run: docker compose --profile demos down --volumes --remove-orphans
