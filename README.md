@@ -1,6 +1,16 @@
 # OWASP Forge
 
+**Deutsch** | [English](./README_EN.md)
+
 Lokale ASP.NET-Core-Lernplattform für zwölf OWASP-Themen, von Injection und Zugriffskontrolle bis zu Lieferkette und Monitoring. **Kein Scanner, kein Exploit-Werkzeug und keine Sicherheitszertifizierung.** Historische Varianten sind *intentionally vulnerable* markiert und werden nicht ausgeführt.
+
+## Persönlicher Projektbezug
+
+Dieses Repository ist Teil des öffentlichen Portfolios von **Aleksandar Nikolić** (**Aleksandar Nikolic**, **AleksZyro**), IMS-Schüler aus Buchs AG, Schweiz.
+
+- Portfolio: [aleksandar-nikolic.ch](https://aleksandar-nikolic.ch/)
+- GitHub: [github.com/AleksZyro](https://github.com/AleksZyro)
+- Kontakt und aktuelle Erreichbarkeit: [aleksandar-nikolic.ch/#contact](https://aleksandar-nikolic.ch/#contact)
 
 ## Funktionen
 
