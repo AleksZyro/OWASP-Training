@@ -54,6 +54,7 @@ public sealed class ProgressService(ForgeDbContext database)
             database.Progress.Add(record);
         }
 
+        if (record.IsCompleted) return;
         record.Attempts++;
         record.PenaltyPoints += Math.Max(0, penalty);
         await database.SaveChangesAsync(cancellationToken);
@@ -68,7 +69,7 @@ public sealed class ProgressService(ForgeDbContext database)
             database.Progress.Add(record);
         }
 
-        if (level != record.HintsUsed + 1 || level > 2)
+        if (record.IsCompleted || level != record.HintsUsed + 1 || level > 2)
         {
             return false;
         }

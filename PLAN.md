@@ -1,5 +1,13 @@
 # OWASP Forge – Plan
 
+## Wartbarkeit und Kursübersicht – 17. Oktober 2026
+
+- Aktuelles `origin/main` vor Änderungen abrufen und mit lokalem `main` vergleichen; bestehende Änderungen aus dem vorherigen Lauf erhalten.
+- Challenge-Inhalte in vier Kursordner mit je drei explizit registrierten Stationsmodulen zerlegen. Gemeinsame Metadaten und Antwortschlüssel nur einmal definieren; DE-/EN-Texte gehören jeweils in dasselbe Stationsmodul.
+- Katalog beim Aufbau auf eindeutige IDs/Reihenfolge, vollständige Lokalisierung und bekannte Demo-Referenzen prüfen. Bestehende Registry-Schnittstellen, URLs und Fortschritts-IDs erhalten.
+- Startseiten mit Fortschritt pro Kurs, eindeutigen Statusbezeichnungen und Fortsetzung einer begonnenen Station verbessern; semantische Gruppen, Code, Hinweise, Feedback, Fokus und mobile Darstellung prüfen.
+- Tests für Katalogparität, sichere Defaults, bestehende Fortschrittsdatensätze und Browser-Flows ausführen. Erst nach Restore, Build, Tests, Formatierung und Compose-Prüfung direkt auf `main` committen und auf `origin/main` pushen.
+
 ## Projektziel
 
 OWASP Forge ist eine lokale Lernplattform für zwölf grundlegende OWASP-Themen in vier Kursen. Sie ist kein Scanner und kein Angriffswerkzeug: Demos, Prüfungen und Docker-Container sind ausschliesslich für die mitgelieferten Lerninhalte vorgesehen.
@@ -17,7 +25,7 @@ Startseite mit Fortschritt, Challenge-Detailseiten mit Lerninhalt, gestaffelten 
 
 ## Sicherheitsmodell
 
-Die Plattform bindet standardmässig nur an `127.0.0.1`. Client-Daten werden nie als Abschlussnachweis vertraut; die Lösung wird serverseitig gegen eine Registry-Regel validiert. Es gibt keine Shell-Ausführung, keine frei wählbaren URLs und keine Host-Scans. Container sind read-only, ohne Capabilities und in getrennten internen Docker-Netzen ohne externe Peers; sie enthalten nur lokale Erklärseiten. Alle historischen unsicheren Varianten sind als **intentionally vulnerable** gekennzeichnet und werden nicht ausgeführt.
+Die Plattform bindet standardmässig nur an `127.0.0.1`. Client-Daten werden nie als Abschlussnachweis vertraut; die Lösung wird serverseitig gegen eine Registry-Regel validiert. Es gibt keine Shell-Ausführung, keine frei wählbaren URLs und keine Host-Scans. Container sind read-only und ohne Capabilities. Demos liegen in getrennten internen Netzen; die Plattform verwendet eine separate Bridge mit festem Loopback-Host-Port. Die Demo-Container enthalten nur lokale Erklärseiten. Alle historischen unsicheren Varianten sind als **intentionally vulnerable** gekennzeichnet und werden nicht ausgeführt.
 
 ## Teststrategie
 
@@ -45,7 +53,7 @@ Ein gestarteter Lernlauf wird lokal als «in Bearbeitung» gespeichert und kann 
 
 ## Stabilisierung: Bedienung und Laufzeit
 
-Der Sprachwechsel bewahrt auf Challenge-Seiten die aktuelle Stations-ID. Erfolgreiche Prüfungen führen zur nächsten offenen Station, ein Reset bestätigt den tatsächlichen lokalen Zustand und verhindert doppelte Formularübermittlungen. Die SQLite-Schemaerstellung erfolgt mit einer versionierten EF-Core-Migration und übernimmt bestehende lokale Fortschrittsdatenbanken. Das Dockerfile führt zuerst einen lockdateibasierten Restore aus; Compose hält die Plattform im internen Netzwerk und veröffentlicht sie nur über `127.0.0.1`.
+Der Sprachwechsel bewahrt auf Challenge-Seiten die aktuelle Stations-ID. Erfolgreiche Prüfungen führen zur nächsten offenen Station, ein Reset bestätigt den tatsächlichen lokalen Zustand und verhindert doppelte Formularübermittlungen. Die SQLite-Schemaerstellung erfolgt mit einer versionierten EF-Core-Migration und übernimmt bestehende lokale Fortschrittsdatenbanken. Das Dockerfile führt zuerst einen lockdateibasierten Restore aus; Compose hält die Plattform auf einer separaten Bridge und veröffentlicht sie nur über `127.0.0.1`; diese Bridge ist keine Egress-Sperre.
 
 ## UX-Nachschärfung: geführter Kursweg
 
@@ -57,7 +65,15 @@ Jede der sechs Stationen erhält eine eigene, statische Demo-App in einem separa
 
 ## Lernfluss und faire Bewertung
 
-Die Detailseite startet mit einem erklärenden Kontext und führt erst über «Weiter zur Prüfung» zur Antwortauswahl. Hinweise werden einzeln und in Reihenfolge freigeschaltet; jeder Hinweis kostet 10 Punkte. Falsche Antworten werden serverseitig protokolliert und kosten 15 Punkte. Die Anzeige begrenzt die erzielten Punkte auf mindestens null. Die Lösungserklärung bleibt bis zur korrekt validierten Antwort verborgen; bereits abgeschlossene Challenges lassen sich nicht durch nachträgliche Formularaufrufe verändern. Die Regeln gelten identisch in deutscher und englischer Oberfläche.
+Die Detailseite startet mit einer greifbaren lokalen Ausgangslage: pro Station werden eine historische, klar markierte «intentionally vulnerable»-Variante und eine sichere Richtung gegenübergestellt. Erst danach führt ein schlichtes «Weiter» zur Antwortauswahl. Hinweise werden einzeln und in Reihenfolge freigeschaltet; jeder Hinweis kostet 10 Punkte. Falsche Antworten werden serverseitig protokolliert und kosten 15 Punkte. Die Anzeige begrenzt die erzielten Punkte auf mindestens null. Die Lösungserklärung bleibt bis zur korrekt validierten Antwort verborgen; bereits abgeschlossene Challenges lassen sich nicht durch nachträgliche Formularaufrufe verändern. Redundante Beschriftungen wie «Test» oder technische Prüfhinweise werden vermieden. Die Regeln gelten identisch in deutscher und englischer Oberfläche.
+
+## Lerninhalte: erst verstehen, dann anwenden
+
+Jede Station zeigt vor der Antwortauswahl eine konkrete lokale Situation, die Sicherheitsauswirkung, die Aufgabe und einen Vergleich zwischen historischer und sicherer Variante. Drei kurze Merkpunkte übersetzen das Beispiel in praktische Regeln. Die vorhandenen sechs Fragen prüfen anschliessend dieselbe Schutzidee in unterschiedlichen Situationen; Hinweise bleiben optional und werden transparent von der Punktzahl abgezogen. Die Inhalte und Merkpunkte sind in Deutsch und Englisch deckungsgleich, damit Sprache nur die Darstellung und nicht den Lernumfang verändert.
+
+## Application-Security-Labor: Nachhol-Loop
+
+Der Ausbau macht die vorhandene Lernplattform als Portfolio-Labor nachvollziehbarer: pro Kernstation stehen historische, klar markierte Ursachen, sichere Gegenmassnahmen, lokale HTTP-Evidenz und Regressionstests nebeneinander. Der Plattformcode erhält strukturierte Ereignislogs ohne Antworten oder Geheimnisse. GET-Anfragen bleiben seiteneffektfrei; persistenter Fortschritt entsteht nur aus antiforgery-geschützten POST-Aktionen. Compose verwendet für Demos interne Netze und für die Plattform eine separate Bridge, capability-freie read-only-Container und eine dokumentierte, nicht geheime `.env.example`.
 
 ## Kursausbau: zwölf Stationen mit je sechs Fragen
 
@@ -65,4 +81,4 @@ Jede Station enthält sechs aufeinander aufbauende Fragen. Eine Station gilt ers
 
 ## Release-Härtung
 
-Vor einem öffentlichen oder schulischen Release müssen Betreiberidentität und Kontaktangaben in `docs/PRIVACY.md` ergänzt, Docker-Build und Smoke-Test mit einer verfügbaren Engine ausgeführt und die CI-Prüfungen erfolgreich abgeschlossen werden. Die CI startet alle sechs Demo-Container kurzzeitig, prüft nur feste localhost-Ports und räumt sie anschliessend auf. Release-Metadaten, MIT-Lizenz und Changelog sind enthalten; eine rechtliche Prüfung der konkreten Betreiberinstanz bleibt erforderlich.
+Vor einem öffentlichen oder schulischen Release müssen Betreiberidentität und Kontaktangaben in `docs/PRIVACY.md` ergänzt, Docker-Build und Smoke-Test mit einer verfügbaren Engine ausgeführt und die CI-Prüfungen erfolgreich abgeschlossen werden. Die CI startet alle sechs Demo-Container kurzzeitig, prüft die Plattform über localhost und Demo-HTTP innerhalb der isolierten Container und räumt sie anschliessend auf. Release-Metadaten, MIT-Lizenz und Changelog sind enthalten; eine rechtliche Prüfung der konkreten Betreiberinstanz bleibt erforderlich.

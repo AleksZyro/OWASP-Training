@@ -13,11 +13,18 @@
     <progress value="@Model.CompletedCount" max="@Model.Challenges.Count">@Model.CompletedCount of @Model.Challenges.Count</progress>
 </section>
 
+<nav class="course-jump" aria-label="Four courses">
+    @foreach (var course in Model.Courses)
+    {
+        <a href="#@course.First().CourseId"><span>@course.Key</span><small>@Model.CourseCompleted(course) / @course.Count()</small></a>
+    }
+</nav>
+
 @if (Model.NextChallenge is not null)
 {
     <section class="continue-course" aria-label="Next station">
         <div class="course-marker" aria-hidden="true">→</div>
-        <div><p class="eyebrow">Up next</p><h2>@Model.NextChallenge.Title</h2><p>Continue with the next open station in your learning path.</p></div>
+        <div><p class="eyebrow">@(Model.StartedIds.Contains(Model.NextChallenge.Id) ? "Your current station" : "Up next")</p><h2>@Model.NextChallenge.Title</h2><p>@Model.NextChallenge.LearningGoal</p></div>
         <a class="button button-solid" href="/en/challenge/@Model.NextChallenge.Id">Continue</a>
     </section>
 }
@@ -30,24 +37,29 @@ else
 }
 
 <section class="course-section" aria-labelledby="challenges-title">
-    <div class="section-heading"><div><p class="eyebrow">Course path</p><h2 id="challenges-title">Learn in clear topic blocks</h2></div><p>Every answer is verified on the server.</p></div>
+    <div class="section-heading"><div><p class="eyebrow">Course path</p><h2 id="challenges-title">Learn in clear topic blocks</h2></div><p>Each station starts with a concrete example.</p></div>
     @foreach (var course in Model.Courses)
     {
-        <section class="course-module" aria-labelledby="course-@course.Key.Replace(" ", "-").ToLowerInvariant()">
-            <header class="course-module-header"><div><p class="eyebrow">@course.Key</p><h3 id="course-@course.Key.Replace(" ", "-").ToLowerInvariant()">Three stations · 18 questions</h3></div></header>
+        var courseId = course.First().CourseId;
+        var completed = Model.CourseCompleted(course);
+        <section class="course-module" id="@courseId" aria-labelledby="course-@courseId">
+            <header class="course-module-header">
+                <div><h3 id="course-@courseId">@course.Key</h3><p>@Model.CourseDescription(course.Key)</p></div>
+                <div class="course-completion"><span>@completed of @course.Count() completed</span><progress aria-label="Progress: @course.Key" value="@completed" max="@course.Count()">@completed of @course.Count()</progress></div>
+            </header>
             <ol class="learning-path">
                 @foreach (var item in course)
                 {
                     var complete = Model.CompletedIds.Contains(item.Id);
                     var started = Model.StartedIds.Contains(item.Id);
-                    var status = complete ? "Completed" : started ? "In progress" : "Ready";
+                    var status = complete ? "Completed" : started ? "In progress" : "Not started";
                     var statusClass = complete ? "done" : started ? "active" : "open";
                     <li class="path-station @statusClass">
                         <article class="station-card">
                             <div class="station-topline"><span class="category">@item.Category</span><span class="status @statusClass">@status</span></div>
                             <h4>@item.Title</h4>
                             <p>@item.LearningGoal</p>
-                            <div class="station-details"><span>@item.Difficulty</span><span>@item.Duration</span><span>6 questions</span></div>
+                            <div class="station-details"><span>@item.Difficulty</span><span>@item.Duration</span><span>Guided learning path</span></div>
                             <a class="station-link" href="/en/challenge/@item.Id">Open station <span aria-hidden="true">→</span></a>
                         </article>
                     </li>

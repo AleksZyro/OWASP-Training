@@ -6,11 +6,13 @@ services:
     environment:
       ASPNETCORE_URLS: http://0.0.0.0:8080
       ASPNETCORE_HTTP_PORTS: "8080"
+      Forge__DataDirectory: ${FORGE_DATA_DIRECTORY:-/app/data}
     expose: ["8080"]
     ports: ["127.0.0.1:5080:8080"]
     networks: [platform-host]
     read_only: true
     tmpfs: ["/tmp", "/app/data"]
+    cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
 
   demo-sql-injection:

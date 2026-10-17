@@ -37,6 +37,10 @@ jobs:
             test -n "$container_id"
             test "$(docker inspect --format '{{.State.Status}}' "$container_id")" = running
           done
+          curl --fail --silent --show-error --retry 15 --retry-delay 1 --retry-connrefused --max-time 5 "http://127.0.0.1:5080/" > /dev/null
+          for service in demo-sql-injection demo-xss demo-idor demo-authentication demo-file-upload demo-ssrf; do
+            docker compose --profile demos exec -T "$service" wget -q -O /dev/null "http://127.0.0.1:8080/"
+          done
           docker compose --profile demos logs --no-color --tail=80 platform
       - name: Stop local containers
         if: always()

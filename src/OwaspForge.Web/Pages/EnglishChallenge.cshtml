@@ -1,11 +1,146 @@
 @page "/en/challenge/{id}"
 @model EnglishChallengeModel
-@{ ViewData["Title"] = Model.SelectedChallenge!.Title; var success = Request.Query["solved"] == "true"; var reset = Request.Query["reset"] == "true"; }
-<a class="back-link" href="/en">← Back to course path</a>
-<article><header class="challenge-header"><div><p class="eyebrow">@Model.SelectedChallenge.Category</p><h1>@Model.SelectedChallenge.Title</h1><p class="lead">@Model.SelectedChallenge.LearningGoal</p></div><dl class="challenge-facts"><div><dt>Difficulty</dt><dd>@Model.SelectedChallenge.Difficulty</dd></div><div><dt>Estimated time</dt><dd>@Model.SelectedChallenge.Duration</dd></div><div><dt>Local sandbox</dt><dd>@Model.SelectedChallenge.Id</dd></div></dl></header>
-    @if (Model.DemoUrl is not null) { <p class="demo-launch"><strong>Local demo:</strong> <a href="@Model.DemoUrl" target="_blank" rel="noreferrer">Open demo</a></p> }
-    @if (reset) { <div class="reset-confirmation" role="status" aria-live="polite"><strong>Station reset.</strong> Local progress and score penalties were removed.</div> }
-    @if (success || Model.IsCompleted) { <div class="success" role="status" aria-live="polite"><strong>Station secured.</strong> Server check passed. <strong>@Model.EarnedPoints points</strong> earned@if (Model.PenaltyPoints > 0) { <span> (@Model.PenaltyPoints deducted for attempts/hints)</span> }.</div><div class="completion-actions">@if (Model.NextChallenge is not null) { <a class="button button-solid" href="/en/challenge/@Model.NextChallenge.Id">Next station</a> }<a class="button" href="/en">View course path</a></div> }
-    @if (Model.Feedback is not null) { <div class="error" role="alert"><strong>Not quite yet.</strong> Incorrect answers were scored. @Model.Feedback</div> }
-    @if (!Model.ShowQuiz) { <section class="lesson-intro"><p class="eyebrow">Before you start</p><h2>Understand first, then decide</h2><p class="body-copy">Take a moment with the context. You will see why the historical variant is risky and what behaviour to expect after the fix.</p><div class="risk-note"><strong>Intentionally vulnerable</strong><p>@Model.SelectedChallenge.Explanation The historical variant is never executed or used against external systems.</p></div><div class="intro-grid"><div><strong>Security impact</strong><p>@Model.SelectedChallenge.Impact</p></div><div><strong>Expected behaviour</strong><p>@Model.SelectedChallenge.ExpectedAfterFix</p></div></div><a class="button button-solid" href="/en/challenge/@Model.SelectedChallenge.Id?step=quiz">Continue to the check</a></section> } else { <ol class="lesson-flow"><li class="lesson-step action-step"><div class="lesson-node" aria-hidden="true"></div><section><p class="eyebrow">Secure · @Model.QuestionCount questions</p><h2>Choose the secure measure</h2><p class="body-copy">The questions build on each other. Every question has its own choices and is evaluated only on the server.</p><p class="score-note">Hints and incorrect attempts reduce the obtainable points. Your answers stay local.</p><form method="post" asp-page-handler="Check" data-submit-form data-busy-label="Checking rules …"><fieldset><legend>Which rule protects this station?</legend>@for (var questionIndex = 0; questionIndex < Model.SelectedChallenge.Questions.Count; questionIndex++) { var question = Model.SelectedChallenge.Questions[questionIndex]; <div class="question-block"><p class="question-prompt"><strong>@(questionIndex + 1).</strong> @question.Prompt</p>@foreach (var option in question.Options) { <label class="option"><input type="radio" name="answers[@questionIndex]" value="@option.Value" required /> <span>@option.Label</span></label> }</div> }</fieldset><button class="button button-solid" type="submit">Check answers</button></form></section></li><li class="lesson-step"><div class="lesson-node" aria-hidden="true"></div><section><p class="eyebrow">After the check</p><h2>How do you recognise the fix?</h2><p class="body-copy">@Model.SelectedChallenge.ExpectedAfterFix</p>@if (Model.HintsUsed == 0) { <form method="post" asp-page-handler="Hint" asp-route-level="1"><button class="button hint-button" type="submit">Use first hint (−10 points)</button></form> } else { <details class="hint" open><summary>Hint 1</summary><p>@Model.SelectedChallenge.Hints[0]</p></details> } @if (Model.HintsUsed == 1) { <form method="post" asp-page-handler="Hint" asp-route-level="2"><button class="button hint-button" type="submit">Use second hint (−10 points)</button></form> } else if (Model.HintsUsed >= 2) { <details class="hint" open><summary>Hint 2</summary><p>@Model.SelectedChallenge.Hints[1]</p></details> }</section></li>@if (Model.CanSeeSolution) { <li class="lesson-step final-step"><div class="lesson-node" aria-hidden="true"></div><section><p class="eyebrow">Learn from it</p><h2>Understand the solution</h2><details class="solution" open><summary>Solution explanation</summary><p>@Model.SelectedChallenge.SolutionExplanation</p></details></section></li> }</ol> }
-    <div class="reset-row"><form method="post" asp-page-handler="Reset" data-submit-form data-busy-label="Resetting station …"><button class="button danger" type="submit">Reset station</button></form><a class="owasp-link" href="@Model.SelectedChallenge.OfficialUrl" rel="noreferrer">Official OWASP documentation ↗</a></div></article>
+@{ ViewData["Title"] = Model.SelectedChallenge!.Title; var reset = Request.Query["reset"] == "true"; }
+
+<a class="back-link" href="/en">← Course overview</a>
+<article class="lesson">
+    <header class="challenge-header">
+        <div>
+            <p class="eyebrow">@Model.SelectedChallenge.Category</p>
+            <h1>@Model.SelectedChallenge.Title</h1>
+            <p class="lead">@Model.SelectedChallenge.LearningGoal</p>
+        </div>
+        <dl class="challenge-facts">
+            <div><dt>Scope</dt><dd>@Model.SelectedChallenge.Duration</dd></div>
+            <div><dt>Level</dt><dd>@Model.SelectedChallenge.Difficulty</dd></div>
+        </dl>
+    </header>
+
+    @if (Model.DemoUrl is not null)
+    {
+        <p class="demo-launch"><strong>Local demo available.</strong> <a href="@Model.DemoUrl" target="_blank" rel="noreferrer">View it in a new tab</a></p>
+    }
+
+    @if (reset)
+    {
+        <div class="reset-confirmation" role="status" aria-live="polite">Station reset.</div>
+    }
+
+    @if (Model.IsCompleted)
+    {
+        <div class="success" role="status" aria-live="polite"><strong>Station complete.</strong> You applied the protection rule correctly. <span>@Model.EarnedPoints points</span></div>
+        <div class="completion-actions">
+            @if (Model.NextChallenge is not null) { <a class="button button-solid" href="/en/challenge/@Model.NextChallenge.Id">Next station</a> }
+            <a class="button" href="/en">Course overview</a>
+        </div>
+    }
+
+    @if (Model.Feedback is not null)
+    {
+        <div class="error" role="alert"><strong>Not quite yet.</strong> @Model.Feedback</div>
+    }
+
+    @if (!Model.ShowQuiz)
+    {
+        <section class="understand" aria-labelledby="context-title">
+            <p class="section-kicker">Scenario</p>
+            <h2 id="context-title">What happens in this example?</h2>
+            <p class="body-copy">@Model.SelectedChallenge.Example.Context</p>
+
+            <div class="lesson-brief">
+                <section>
+                    <p class="brief-label">Why it matters</p>
+                    <p>@Model.SelectedChallenge.Impact</p>
+                </section>
+                <section>
+                    <p class="brief-label">What to look for</p>
+                    <p>@Model.SelectedChallenge.Task</p>
+                </section>
+            </div>
+
+            <div class="example-panel">
+                <section class="example-variant risky-example" aria-labelledby="risky-example-title">
+                    <p id="risky-example-title">Historical variant <span>intentionally vulnerable</span></p>
+                    <pre><code>@Model.SelectedChallenge.Example.RiskySnippet</code></pre>
+                </section>
+                <section class="example-variant safe-example" aria-labelledby="safe-example-title">
+                    <p id="safe-example-title">Safer direction</p>
+                    <pre><code>@Model.SelectedChallenge.Example.SaferSnippet</code></pre>
+                </section>
+            </div>
+
+            <div class="explanation"><h3>Why this matters</h3><p>@Model.SelectedChallenge.Explanation</p></div>
+            <div class="takeaway"><strong>Remember</strong><p>@Model.SelectedChallenge.Example.Takeaway</p></div>
+            @if (Model.SelectedChallenge.Example.KeyPoints.Count > 0)
+            {
+                <section class="key-points" aria-labelledby="key-points-title">
+                    <h3 id="key-points-title">Three things to remember</h3>
+                    <ul>
+                        @foreach (var point in Model.SelectedChallenge.Example.KeyPoints)
+                        {
+                            <li>@point</li>
+                        }
+                    </ul>
+                </section>
+            }
+            <p class="expected"><strong>After the fix:</strong> @Model.SelectedChallenge.ExpectedAfterFix</p>
+            @if (Model.SelectedChallenge.Protocol.IsAvailable)
+            {
+                <section class="protocol-evidence" aria-labelledby="protocol-title">
+                    <p class="section-kicker">HTTP evidence</p>
+                    <h3 id="protocol-title">What the server must decide</h3>
+                    <dl>
+                        <div><dt>Request</dt><dd><code>@Model.SelectedChallenge.Protocol.Method</code></dd></div>
+                        <div><dt>Expected response</dt><dd><code>@Model.SelectedChallenge.Protocol.Status</code></dd></div>
+                        <div><dt>Security signal</dt><dd>@Model.SelectedChallenge.Protocol.SecurityHeaders</dd></div>
+                        <div><dt>Identity</dt><dd>@Model.SelectedChallenge.Protocol.AuthenticationState</dd></div>
+                        <div><dt>Decision</dt><dd>@Model.SelectedChallenge.Protocol.AuthorizationResult</dd></div>
+                    </dl>
+                    <p>This is a local expected decision, not a network request.</p>
+                </section>
+            }
+            <form method="post" asp-page-handler="Start"><button class="button button-solid" type="submit">Continue</button></form>
+        </section>
+    }
+    else
+    {
+        <section class="decision" aria-labelledby="decision-title">
+            <p class="section-kicker">Apply it</p>
+            <h2 id="decision-title">Make your decision</h2>
+            <p class="body-copy">Apply the example to the following situations.</p>
+            <p class="score-note">Hints cost 10 points each; incorrect answers cost 15 points each. You can <a href="/en/challenge/@Model.SelectedChallenge.Id">read the scenario again</a>.</p>
+            <form method="post" asp-page-handler="Check" data-submit-form data-busy-label="Reviewing …">
+                <fieldset>
+                    <legend>Which answer fits each situation?</legend>
+                    @for (var questionIndex = 0; questionIndex < Model.SelectedChallenge.Questions.Count; questionIndex++)
+                    {
+                        var question = Model.SelectedChallenge.Questions[questionIndex];
+                        <fieldset class="question-block">
+                            <legend class="question-prompt"><span>@(questionIndex + 1)</span> @question.Prompt</legend>
+                            @foreach (var option in question.Options)
+                            {
+                                <label class="option"><input type="radio" name="answers[@questionIndex]" value="@option.Value" required /> <span>@option.Label</span></label>
+                            }
+                        </fieldset>
+                    }
+                </fieldset>
+                <button class="button button-solid" type="submit">Review answers</button>
+            </form>
+        </section>
+
+        <aside class="help" aria-label="Hints">
+            <h2>Need a nudge?</h2>
+            @if (Model.HintsUsed == 0) { <form method="post" asp-page-handler="Hint" asp-route-level="1"><button class="text-button" type="submit">Open first hint <span>−10 points</span></button></form> }
+            else { <p>@Model.SelectedChallenge.Hints[0]</p> }
+            @if (Model.HintsUsed == 1) { <form method="post" asp-page-handler="Hint" asp-route-level="2"><button class="text-button" type="submit">Open second hint <span>−10 points</span></button></form> }
+            else if (Model.HintsUsed >= 2) { <p>@Model.SelectedChallenge.Hints[1]</p> }
+        </aside>
+
+        @if (Model.CanSeeSolution)
+        {
+            <section class="solution"><h2>Why this solution works</h2><p>@Model.SelectedChallenge.SolutionExplanation</p></section>
+        }
+    }
+
+    <div class="reset-row"><form method="post" asp-page-handler="Reset" data-submit-form data-busy-label="Resetting …"><button class="button danger" type="submit">Reset station</button></form><a class="owasp-link" href="@Model.SelectedChallenge.OfficialUrl" rel="noreferrer">OWASP reference ↗</a></div>
+</article>

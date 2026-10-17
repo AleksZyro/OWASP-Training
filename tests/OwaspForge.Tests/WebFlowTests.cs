@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using OwaspForge.Core;
 using OwaspForge.Web.Data;
 
@@ -32,6 +33,7 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Equal("DENY", response.Headers.GetValues("X-Frame-Options").Single());
         Assert.Equal("nosniff", response.Headers.GetValues("X-Content-Type-Options").Single());
         Assert.Equal("same-origin", response.Headers.GetValues("Cross-Origin-Opener-Policy").Single());
+        Assert.Contains("frame-ancestors 'none'", response.Headers.GetValues("Content-Security-Policy").Single(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -45,6 +47,9 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         var page = await getResponse.Content.ReadAsStringAsync();
         var token = Regex.Match(page, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
         Assert.False(string.IsNullOrWhiteSpace(token));
+        var cookie = Assert.Single(getResponse.Headers.GetValues("Set-Cookie"), value => value.StartsWith("OwaspForge.Antiforgery=", StringComparison.Ordinal));
+        Assert.Contains("httponly", cookie, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("samesite=strict", cookie, StringComparison.OrdinalIgnoreCase);
 
         var formValues = new List<KeyValuePair<string, string>> { new("__RequestVerificationToken", token) };
         formValues.AddRange(new ChallengeRegistry().Find("sql-injection")!.Questions.Select((question, index) => new KeyValuePair<string, string>($"answers[{index}]", question.CorrectOption)));
@@ -58,17 +63,31 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
     }
 
     [Fact]
-    public async Task Opening_and_resetting_a_station_updates_the_visible_local_progress_state()
+    public async Task Opening_a_station_is_side_effect_free_and_a_protected_action_starts_it()
     {
         const string challengePath = "/Challenge/xss";
         var openResponse = await client.GetAsync(challengePath);
         Assert.Equal(HttpStatusCode.OK, openResponse.StatusCode);
 
+        var untouchedHome = await client.GetStringAsync("/");
+        Assert.Contains("Nicht begonnen", untouchedHome, StringComparison.Ordinal);
+
+        var quizResponse = await client.GetAsync($"{challengePath}?step=quiz");
+        var page = await quizResponse.Content.ReadAsStringAsync();
+        var token = Regex.Match(page, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
+        var hintResponse = await client.PostAsync(
+            $"{challengePath}?handler=Hint",
+            new FormUrlEncodedContent([
+                new KeyValuePair<string, string>("__RequestVerificationToken", token),
+                new KeyValuePair<string, string>("level", "1"),
+            ]));
+        Assert.Equal(HttpStatusCode.Redirect, hintResponse.StatusCode);
+
         var inProgressHome = await client.GetStringAsync("/");
         Assert.Contains("In Bearbeitung", inProgressHome, StringComparison.Ordinal);
 
-        var page = await openResponse.Content.ReadAsStringAsync();
-        var token = Regex.Match(page, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
+        var hintedPage = await client.GetStringAsync(hintResponse.Headers.Location!.OriginalString);
+        token = Regex.Match(hintedPage, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
         var resetResponse = await client.PostAsync(
             $"{challengePath}?handler=Reset",
             new FormUrlEncodedContent([new KeyValuePair<string, string>("__RequestVerificationToken", token)]));
@@ -80,7 +99,23 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Contains("Station zurückgesetzt", resetPage, StringComparison.Ordinal);
 
         var resetHome = await client.GetStringAsync("/");
-        Assert.Contains("Bereit", resetHome, StringComparison.Ordinal);
+        Assert.Contains("Nicht begonnen", resetHome, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("/Challenge/idor")]
+    [InlineData("/en/challenge/idor")]
+    public async Task Viewing_any_localized_challenge_does_not_create_progress(string path)
+    {
+        using var isolatedFactory = new ForgeWebApplicationFactory();
+        using var isolatedClient = isolatedFactory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+
+        var response = await isolatedClient.GetAsync(path);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        await using var scope = isolatedFactory.Services.CreateAsyncScope();
+        var database = scope.ServiceProvider.GetRequiredService<ForgeDbContext>();
+        Assert.Empty(await database.Progress.ToListAsync());
     }
 
     [Theory]
@@ -107,13 +142,66 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
     }
 
     [Theory]
-    [InlineData("/challenge/sql-injection?solved=true", "Lösungserklärung")]
+    [InlineData("/challenge/sql-injection?solved=true", "Warum diese Lösung funktioniert")]
     [InlineData("/en/challenge/sql-injection?solved=true", "Solution explanation")]
     public async Task Solution_is_not_unlocked_by_a_query_string(string path, string solutionText)
     {
-        var page = await client.GetStringAsync(path);
+        using var isolatedFactory = new ForgeWebApplicationFactory();
+        using var isolatedClient = isolatedFactory.CreateClient();
+        var page = await isolatedClient.GetStringAsync(path);
 
         Assert.DoesNotContain(solutionText, page, StringComparison.Ordinal);
+        Assert.DoesNotContain("class=\"success\"", page, StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData("/Challenge/idor", "Deine aktuelle Station")]
+    [InlineData("/en/challenge/idor", "Your current station")]
+    public async Task Starting_a_station_requires_antiforgery_and_is_recommended_on_the_homepage(string path, string currentHeading)
+    {
+        using var isolatedFactory = new ForgeWebApplicationFactory();
+        using var isolatedClient = isolatedFactory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        Assert.Equal(HttpStatusCode.BadRequest, (await isolatedClient.PostAsync($"{path}?handler=Start", new FormUrlEncodedContent([]))).StatusCode);
+        var intro = await isolatedClient.GetStringAsync(path);
+        var token = Regex.Match(intro, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
+        var start = await isolatedClient.PostAsync($"{path}?handler=Start",
+            new FormUrlEncodedContent([new KeyValuePair<string, string>("__RequestVerificationToken", token)]));
+        Assert.Equal(HttpStatusCode.Redirect, start.StatusCode);
+        var home = await isolatedClient.GetStringAsync(path.StartsWith("/en", StringComparison.Ordinal) ? "/en" : "/");
+        Assert.Contains(currentHeading, home, StringComparison.Ordinal);
+        Assert.Contains("idor", home, StringComparison.Ordinal);
+        await using var scope = isolatedFactory.Services.CreateAsyncScope();
+        var record = Assert.Single(await scope.ServiceProvider.GetRequiredService<ForgeDbContext>().Progress.ToListAsync());
+        Assert.Equal("idor", record.ChallengeId);
+        Assert.False(record.IsCompleted);
+    }
+
+    [Fact]
+    public async Task Existing_progress_survives_localization_and_drives_course_totals()
+    {
+        using var isolatedFactory = new ForgeWebApplicationFactory();
+        using var isolatedClient = isolatedFactory.CreateClient();
+        var completedAt = DateTimeOffset.Parse("2026-09-01T12:00:00+00:00", System.Globalization.CultureInfo.InvariantCulture);
+        await using (var scope = isolatedFactory.Services.CreateAsyncScope())
+        {
+            var database = scope.ServiceProvider.GetRequiredService<ForgeDbContext>();
+            database.Progress.Add(new ProgressRecord { ChallengeId = "sql-injection", IsCompleted = true, CompletedAt = completedAt, PenaltyPoints = 25, HintsUsed = 1, Attempts = 1 });
+            await database.SaveChangesAsync();
+        }
+        foreach (var path in new[] { "/", "/en", "/Challenge/sql-injection", "/en/challenge/sql-injection" })
+        {
+            Assert.Equal(HttpStatusCode.OK, (await isolatedClient.GetAsync(path)).StatusCode);
+        }
+        Assert.Contains("1 von 3 abgeschlossen", await isolatedClient.GetStringAsync("/"), StringComparison.Ordinal);
+        Assert.Contains("1 of 3 completed", await isolatedClient.GetStringAsync("/en"), StringComparison.Ordinal);
+        await using var readScope = isolatedFactory.Services.CreateAsyncScope();
+        var record = Assert.Single(await readScope.ServiceProvider.GetRequiredService<ForgeDbContext>().Progress.ToListAsync());
+        Assert.Equal((true, completedAt, 25, 1, 1), (record.IsCompleted, record.CompletedAt, record.PenaltyPoints, record.HintsUsed, record.Attempts));
+        var progressService = readScope.ServiceProvider.GetRequiredService<ProgressService>();
+        Assert.False(await progressService.UseHintAsync("sql-injection", 2, CancellationToken.None));
+        await progressService.RecordIncorrectAttemptAsync("sql-injection", 15, CancellationToken.None);
+        await readScope.ServiceProvider.GetRequiredService<ForgeDbContext>().Entry(record).ReloadAsync();
+        Assert.Equal((25, 1, 1), (record.PenaltyPoints, record.HintsUsed, record.Attempts));
     }
 
     [Theory]
@@ -166,14 +254,15 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
     {
         const string challengePath = "/Challenge/xss";
         var intro = await client.GetStringAsync(challengePath);
-        Assert.Contains("Weiter zur Prüfung", intro, StringComparison.Ordinal);
-        Assert.DoesNotContain("Lösungserklärung", intro, StringComparison.Ordinal);
+        Assert.Contains("Historische Variante", intro, StringComparison.Ordinal);
+        Assert.Contains("Weiter", intro, StringComparison.Ordinal);
+        Assert.DoesNotContain("Warum diese Lösung funktioniert", intro, StringComparison.Ordinal);
 
         var quizResponse = await client.GetAsync($"{challengePath}?step=quiz");
         var quiz = await quizResponse.Content.ReadAsStringAsync();
         var token = Regex.Match(quiz, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
-        Assert.Contains("Antworten prüfen", quiz, StringComparison.Ordinal);
-        Assert.Contains("6 Fragen", quiz, StringComparison.Ordinal);
+        Assert.Contains("Auswerten", quiz, StringComparison.Ordinal);
+        Assert.Contains("Welche Antwort passt jeweils?", quiz, StringComparison.Ordinal);
 
         var wrongResponse = await client.PostAsync($"{challengePath}?handler=Check", new FormUrlEncodedContent([
             new KeyValuePair<string, string>("__RequestVerificationToken", token),
@@ -186,7 +275,7 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         ]));
         var wrongPage = await wrongResponse.Content.ReadAsStringAsync();
         Assert.Contains("90 Punkte", wrongPage, StringComparison.Ordinal);
-        Assert.DoesNotContain("Lösungserklärung", wrongPage, StringComparison.Ordinal);
+        Assert.DoesNotContain("Warum diese Lösung funktioniert", wrongPage, StringComparison.Ordinal);
 
         var wrongToken = Regex.Match(wrongPage, "name=\"__RequestVerificationToken\" type=\"hidden\" value=\"([^\"]+)\"").Groups[1].Value;
         var hintResponse = await client.PostAsync($"{challengePath}?handler=Hint", new FormUrlEncodedContent([
@@ -196,8 +285,8 @@ public sealed class WebFlowTests : IClassFixture<ForgeWebApplicationFactory>
         Assert.Equal(HttpStatusCode.Redirect, hintResponse.StatusCode);
         Assert.Equal("/Challenge/xss?step=quiz&hint=1", hintResponse.Headers.Location?.OriginalString);
         var hintedPage = await client.GetStringAsync(hintResponse.Headers.Location!.OriginalString);
-        Assert.Contains("Hinweis 1", hintedPage, StringComparison.Ordinal);
-        Assert.DoesNotContain("Lösungserklärung", hintedPage, StringComparison.Ordinal);
+        Assert.Contains("Razor encodiert normale Textausgaben automatisch", hintedPage, StringComparison.Ordinal);
+        Assert.DoesNotContain("Warum diese Lösung funktioniert", hintedPage, StringComparison.Ordinal);
     }
 }
 

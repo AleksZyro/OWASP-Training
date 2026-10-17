@@ -1,7 +1,12 @@
 bin/
 obj/
 /data/
+**/data/
+*.db
+*.db-shm
+*.db-wal
 /src/OwaspForge.Web/Data/*.db
 /src/OwaspForge.Web/Data/*.db-shm
 /src/OwaspForge.Web/Data/*.db-wal
 .vs/
+.env
