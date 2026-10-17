@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "file-upload",
+    "CourseId": "input-output",
+    "Order": 3,
+    "Category": "A04: Insecure Design",
+    "Difficulty": "medium",
+    "DurationMinutes": 25,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload",
+    "DemoId": "file-upload"
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "extension",
+        "upload-policy",
+        "rename"
+      ],
+      "CorrectOption": "upload-policy"
+    },
+    {
+      "OptionValues": [
+        "rename",
+        "upload-policy",
+        "extension"
+      ],
+      "CorrectOption": "upload-policy"
+    },
+    {
+      "OptionValues": [
+        "extension",
+        "upload-policy",
+        "rename"
+      ],
+      "CorrectOption": "upload-policy"
+    },
+    {
+      "OptionValues": [
+        "extension",
+        "upload-policy",
+        "rename"
+      ],
+      "CorrectOption": "upload-policy"
+    },
+    {
+      "OptionValues": [
+        "extension",
+        "upload-policy",
+        "rename"
+      ],
+      "CorrectOption": "upload-policy"
+    },
+    {
+      "OptionValues": [
+        "extension",
+        "upload-policy",
+        "rename"
+      ],
+      "CorrectOption": "upload-policy"
+    }
+  ],
+  "German": {
+    "Title": "Unsicherer Datei-Upload",
+    "LearningGoal": "Du validierst Typ, Grösse und Dateiname und speicherst ausserhalb statischer Inhalte.",
+    "Explanation": "Die historische Upload-Variante ist intentionally vulnerable, weil sie Namen und Pfad direkt übernimmt. Die sichere Variante speichert nur erlaubte, kleine Dateien ausserhalb des Webroots.",
+    "Task": "Wähle die sichere lokale Upload-Regel.",
+    "Impact": "Unerwartete Dateien könnten zugänglich werden oder Speicher erschöpfen.",
+    "ExpectedAfterFix": "Nur erlaubte, begrenzte Dateien werden unter einem serverseitigen Namen ausserhalb des Webroots gespeichert; sie werden nie ausgeführt.",
+    "Hints": [
+      "Dateiendungen allein beweisen keinen Inhaltstyp.",
+      "Verwende eine Allowlist, Grössenlimit und einen generierten Namen."
+    ],
+    "SolutionExplanation": "Allowlist, Grössenlimit, Inhaltsprüfung und ein generierter Name begrenzen das Risiko. Speicherung ausserhalb des Webroots verhindert direkte Ausführung.",
+    "Example": {
+      "Context": "Eine Demobenutzerin lädt `rechnung.pdf` hoch.",
+      "RiskySnippet": "Save(upload.FileName, \"wwwroot/uploads\")",
+      "SaferSnippet": "ValidatePdf(upload, maxBytes: 2_000_000);\nSaveWithGeneratedName(upload, privateStorage);",
+      "Takeaway": "Name, Inhalt, Grösse und Speicherort werden vom Server kontrolliert.",
+      "KeyPoints": [
+        "Der Browser gemeldete Dateityp ist nur ein Hinweis.",
+        "Generierte Namen verhindern Pfad- und Überschreibungsprobleme.",
+        "Ausserhalb des Webroots ist eine zusätzliche Ausführungsbarriere."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /uploads",
+      "Status": "415 Unsupported Media Type",
+      "SecurityHeaders": "X-Content-Type-Options: nosniff",
+      "AuthenticationState": "Gültige lokale Session erforderlich",
+      "AuthorizationResult": "Nicht erlaubter Typ wird vor der Speicherung abgelehnt."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die sichere lokale Upload-Regel.",
+        "Options": {
+          "extension": {
+            "Label": "Nur die Endung prüfen und im Webroot speichern",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "upload-policy": {
+            "Label": "Allowlist, Grössenlimit, generierter Name, ausserhalb des Webroots",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Die Datei nur umbenennen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "rename": {
+            "Label": "Nur einen neuen Dateinamen vergeben",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "upload-policy": {
+            "Label": "Typ, Grösse, Name und Speicherort serverseitig prüfen",
+            "Feedback": ""
+          },
+          "extension": {
+            "Label": "Nur die Endung prüfen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "extension": {
+            "Label": "Im öffentlichen Webroot speichern",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "upload-policy": {
+            "Label": "Unter generiertem Namen ausserhalb des Webroots speichern",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Im Webroot umbenennen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "extension": {
+            "Label": "Nur die Dateiendung lesen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "upload-policy": {
+            "Label": "Die maximale Dateigrösse vor dem Speichern erzwingen",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Nur einen längeren Namen verwenden",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "extension": {
+            "Label": "Den vom Browser gemeldeten Typ übernehmen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "upload-policy": {
+            "Label": "Den ermittelten Inhaltstyp gegen eine Allowlist prüfen",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Den Dateinamen als Typnachweis nutzen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "extension": {
+            "Label": "Uploads direkt über ihre Original-URL ausliefern",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "upload-policy": {
+            "Label": "Uploads nie als ausführbaren Inhalt bereitstellen",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Nur die Originalendung verstecken",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Insecure File Upload",
+    "LearningGoal": "Learn to validate uploads and keep them outside the web root.",
+    "Explanation": "The server controls name, content, size and storage location. The browser-provided content type is only a hint. Generated names avoid path and overwrite problems. Storage outside the web root adds an execution barrier.",
+    "Task": "Choose the safe local upload policy.",
+    "Impact": "Unexpected files could become accessible or exhaust storage.",
+    "ExpectedAfterFix": "Allowlisted content, limits, generated names and storage outside the web root keep uploads non-executable.",
+    "Hints": [
+      "A filename extension alone does not prove the content type.",
+      "Use an allowlist, size limit and generated name."
+    ],
+    "SolutionExplanation": "Allowlisted content, limits, generated names and storage outside the web root keep uploads non-executable.",
+    "Example": {
+      "Context": "A demo user uploads `invoice.pdf`.",
+      "RiskySnippet": "Save(upload.FileName, \"wwwroot/uploads\")",
+      "SaferSnippet": "ValidatePdf(upload, maxBytes: 2_000_000);\nSaveWithGeneratedName(upload, privateStorage);",
+      "Takeaway": "The server controls name, content, size and storage location.",
+      "KeyPoints": [
+        "The browser-provided content type is only a hint.",
+        "Generated names avoid path and overwrite problems.",
+        "Storage outside the web root adds an execution barrier."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /uploads",
+      "Status": "415 Unsupported Media Type",
+      "SecurityHeaders": "X-Content-Type-Options: nosniff",
+      "AuthenticationState": "A valid local session is required",
+      "AuthorizationResult": "An unapproved type is rejected before storage."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the safe local upload policy.",
+        "Options": {
+          "extension": {
+            "Label": "Check only the extension and store inside the web root",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "upload-policy": {
+            "Label": "Use an allowlist, size limit, generated name and private storage",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Only rename the file",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "rename": {
+            "Label": "Only assign a new filename",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "upload-policy": {
+            "Label": "Validate type, size, name and storage location on the server",
+            "Feedback": ""
+          },
+          "extension": {
+            "Label": "Check only the extension",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "extension": {
+            "Label": "Store inside the public web root",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "upload-policy": {
+            "Label": "Store under a generated name outside the web root",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Rename inside the web root",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "extension": {
+            "Label": "Only read the file extension",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "upload-policy": {
+            "Label": "Enforce maximum file size before saving",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Only use a longer name",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "extension": {
+            "Label": "Trust the content type reported by the browser",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "upload-policy": {
+            "Label": "Check the detected content against an allowlist",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Use the filename as proof of type",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "extension": {
+            "Label": "Serve uploads directly through their original URL",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "upload-policy": {
+            "Label": "Never serve uploads as executable content",
+            "Feedback": ""
+          },
+          "rename": {
+            "Label": "Only hide the original extension",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

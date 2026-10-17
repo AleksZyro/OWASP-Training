@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "idor",
+    "CourseId": "identity-access",
+    "Order": 6,
+    "Category": "A01: Broken Access Control",
+    "Difficulty": "medium",
+    "DurationMinutes": 30,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/Top10/A01_2021-Broken_Access_Control/",
+    "DemoId": "idor"
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "hidden",
+        "owner",
+        "route"
+      ],
+      "CorrectOption": "owner"
+    },
+    {
+      "OptionValues": [
+        "route",
+        "owner",
+        "hidden"
+      ],
+      "CorrectOption": "owner"
+    },
+    {
+      "OptionValues": [
+        "hidden",
+        "owner",
+        "route"
+      ],
+      "CorrectOption": "owner"
+    },
+    {
+      "OptionValues": [
+        "hidden",
+        "owner",
+        "route"
+      ],
+      "CorrectOption": "owner"
+    },
+    {
+      "OptionValues": [
+        "hidden",
+        "owner",
+        "route"
+      ],
+      "CorrectOption": "owner"
+    },
+    {
+      "OptionValues": [
+        "hidden",
+        "owner",
+        "route"
+      ],
+      "CorrectOption": "owner"
+    }
+  ],
+  "German": {
+    "Title": "Broken Access Control / IDOR",
+    "LearningGoal": "Du prüfst Zugriffe auf jedes einzelne Objekt serverseitig.",
+    "Explanation": "Die historische Demo vertraut auf eine Objekt-ID aus der URL und ist intentionally vulnerable. Die sichere Variante vergleicht Eigentümer und aktuelle Identität auf dem Server.",
+    "Task": "Wähle die Prüfung vor dem Lesen eines lokalen Profils.",
+    "Impact": "Lokale Beispieldaten einer anderen Person wären sichtbar.",
+    "ExpectedAfterFix": "Nur die berechtigte Demobenutzerin erhält ihr eigenes Profil; andere IDs ergeben eine Ablehnung.",
+    "Hints": [
+      "Eine ID ist kein Berechtigungsnachweis.",
+      "Prüfe Besitz oder Rolle auf dem Server, nicht im Link."
+    ],
+    "SolutionExplanation": "Der Server vergleicht Identität, Rolle und Objektbesitz bei jedem Objektzugriff. Eine URL-ID wird nie als Berechtigung akzeptiert.",
+    "Example": {
+      "Context": "Die angemeldete Demobenutzerin ruft `/profiles/42` auf.",
+      "RiskySnippet": "return profiles.Find(id);",
+      "SaferSnippet": "profile = profiles.Find(id);\nAuthorize(currentUser, profile.OwnerId);",
+      "Takeaway": "Eine Objekt-ID beschreibt ein Objekt, aber nie die Berechtigung dazu.",
+      "KeyPoints": [
+        "Jeder Objektzugriff braucht eine eigene Autorisierungsprüfung.",
+        "Versteckte Felder und schwer erratbare IDs sind keine Autorisierung.",
+        "Erlaubte und verbotene Fälle gehören beide in Tests."
+      ]
+    },
+    "Protocol": {
+      "Method": "GET /profiles/42",
+      "Status": "403 Forbidden",
+      "SecurityHeaders": "Cache-Control: no-store",
+      "AuthenticationState": "Demo-Identität ist angemeldet",
+      "AuthorizationResult": "Objektbesitz stimmt nicht mit der Identität überein."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die Prüfung vor dem Lesen eines lokalen Profils.",
+        "Options": {
+          "hidden": {
+            "Label": "ID in einem versteckten Feld speichern",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "owner": {
+            "Label": "Aktuelle Identität gegen Objektbesitz prüfen",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Objekt-ID nur anders benennen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "route": {
+            "Label": "Die Route anders benennen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "owner": {
+            "Label": "Besitz oder Rolle serverseitig vergleichen",
+            "Feedback": ""
+          },
+          "hidden": {
+            "Label": "Auf ein verstecktes Feld vertrauen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "hidden": {
+            "Label": "Versteckte Felder sind unsichtbar",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "owner": {
+            "Label": "Der Client darf die ID frei verändern",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Eine längere URL wäre sicherer",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "hidden": {
+            "Label": "Nur beim ersten Seitenaufruf prüfen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "owner": {
+            "Label": "Autorisierung bei jedem einzelnen Objektzugriff prüfen",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Nur die Navigation ausblenden",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "hidden": {
+            "Label": "Das Objekt nur optisch verstecken",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "owner": {
+            "Label": "Bei fehlender Berechtigung serverseitig ablehnen",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Die Objekt-ID verschleiern",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "hidden": {
+            "Label": "Nur den Happy Path testen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "owner": {
+            "Label": "Tests für erlaubte und verbotene Objektzugriffe schreiben",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Nur URLs manuell umbenennen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Broken Access Control / IDOR",
+    "LearningGoal": "Learn to authorize every object access on the server.",
+    "Explanation": "An object ID identifies an object, never permission to access it. Every object access needs its own authorization check. Hidden fields and hard-to-guess IDs are not authorization. Test both permitted and denied cases.",
+    "Task": "Choose the check before reading a local profile.",
+    "Impact": "Local sample records belonging to another person could become visible.",
+    "ExpectedAfterFix": "The server compares identity, role and ownership for every object access; an object ID is never authorization.",
+    "Hints": [
+      "An ID is not proof of permission.",
+      "Check ownership or roles on the server, not in the link."
+    ],
+    "SolutionExplanation": "The server compares identity, role and ownership for every object access; an object ID is never authorization.",
+    "Example": {
+      "Context": "The signed-in demo user requests `/profiles/42`.",
+      "RiskySnippet": "return profiles.Find(id);",
+      "SaferSnippet": "profile = profiles.Find(id);\nAuthorize(currentUser, profile.OwnerId);",
+      "Takeaway": "An object ID identifies an object, never permission to access it.",
+      "KeyPoints": [
+        "Every object access needs its own authorization check.",
+        "Hidden fields and hard-to-guess IDs are not authorization.",
+        "Test both permitted and denied cases."
+      ]
+    },
+    "Protocol": {
+      "Method": "GET /profiles/42",
+      "Status": "403 Forbidden",
+      "SecurityHeaders": "Cache-Control: no-store",
+      "AuthenticationState": "The demo identity is signed in",
+      "AuthorizationResult": "The resource owner does not match the current identity."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the check before reading a local profile.",
+        "Options": {
+          "hidden": {
+            "Label": "Put the ID in a hidden field",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "owner": {
+            "Label": "Check the current identity against resource ownership",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Only rename the object ID",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "route": {
+            "Label": "Rename the route",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "owner": {
+            "Label": "Compare ownership or role on the server",
+            "Feedback": ""
+          },
+          "hidden": {
+            "Label": "Trust a hidden field",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "hidden": {
+            "Label": "Hidden fields are invisible",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "owner": {
+            "Label": "The client can freely change an ID",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "A longer URL would be safer",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "hidden": {
+            "Label": "Check only on the first page view",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "owner": {
+            "Label": "Authorize every individual object access",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Only hide navigation",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "hidden": {
+            "Label": "Only hide the object visually",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "owner": {
+            "Label": "Reject unauthorized access on the server",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Obscure the object ID",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "hidden": {
+            "Label": "Test only the happy path",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "owner": {
+            "Label": "Test both permitted and forbidden object access",
+            "Feedback": ""
+          },
+          "route": {
+            "Label": "Only rename URLs manually",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

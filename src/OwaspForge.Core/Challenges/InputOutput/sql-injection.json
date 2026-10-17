@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "sql-injection",
+    "CourseId": "input-output",
+    "Order": 1,
+    "Category": "A03: Injection",
+    "Difficulty": "easy",
+    "DurationMinutes": 25,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/www-community/attacks/SQL_Injection",
+    "DemoId": "sql-injection"
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "concat",
+        "parameter",
+        "filter"
+      ],
+      "CorrectOption": "parameter"
+    },
+    {
+      "OptionValues": [
+        "concat",
+        "parameter",
+        "filter"
+      ],
+      "CorrectOption": "parameter"
+    },
+    {
+      "OptionValues": [
+        "filter",
+        "parameter",
+        "concat"
+      ],
+      "CorrectOption": "parameter"
+    },
+    {
+      "OptionValues": [
+        "concat",
+        "parameter",
+        "filter"
+      ],
+      "CorrectOption": "parameter"
+    },
+    {
+      "OptionValues": [
+        "concat",
+        "parameter",
+        "filter"
+      ],
+      "CorrectOption": "parameter"
+    },
+    {
+      "OptionValues": [
+        "concat",
+        "parameter",
+        "filter"
+      ],
+      "CorrectOption": "parameter"
+    }
+  ],
+  "German": {
+    "Title": "SQL Injection",
+    "LearningGoal": "Du erkennst, warum Daten nie in SQL-Text zusammengesetzt werden dürfen.",
+    "Explanation": "Die historische Demo markiert String-Verkettung als intentionally vulnerable. Die sichere Variante trennt Abfragecode und Werte durch Parameter.",
+    "Task": "Wähle die Massnahme, die eine lokale Suchabfrage sicher macht.",
+    "Impact": "Angreifende könnten lokale Beispieldaten ausserhalb der vorgesehenen Suche sehen.",
+    "ExpectedAfterFix": "Die Suche behandelt Eingaben nur als Wert und liefert keine unerwarteten Datensätze.",
+    "Hints": [
+      "Parameter haben Typ und Wert getrennt vom SQL-Code.",
+      "Auch Validierung ersetzt keine parametrisierte Abfrage."
+    ],
+    "SolutionExplanation": "Parameter trennen SQL-Struktur und Eingabewert. Ergänzende Rechtebegrenzung und Tests reduzieren die Folgen von Fehlern zusätzlich.",
+    "Example": {
+      "Context": "Eine lokale Produktsuche erhält den Begriff `laptop`.",
+      "RiskySnippet": "sql = \"SELECT * FROM Products WHERE Name = '\" + search + \"'\"",
+      "SaferSnippet": "command.CommandText = \"SELECT * FROM Products WHERE Name = @search\";\ncommand.Parameters.AddWithValue(\"@search\", search);",
+      "Takeaway": "Der Wert bleibt ein Wert – die SQL-Struktur ändert sich nicht.",
+      "KeyPoints": [
+        "Parameter trennen Code und Daten.",
+        "Escaping und Blocklists sind keine gleichwertige Alternative.",
+        "Minimale Datenbankrechte begrenzen den Schaden."
+      ]
+    },
+    "Protocol": {
+      "Method": "GET /products?name=…",
+      "Status": "200 OK",
+      "SecurityHeaders": "Content-Security-Policy; X-Content-Type-Options: nosniff",
+      "AuthenticationState": "Keine Anmeldung",
+      "AuthorizationResult": "Suche behandelt den Begriff als gebundenen Wert."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die Massnahme, die eine lokale Suchabfrage sicher macht.",
+        "Options": {
+          "concat": {
+            "Label": "SQL-Text durch String-Verkettung bauen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "parameter": {
+            "Label": "Parametrisierte Abfrage mit gebundenem Wert",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Nur Sonderzeichen sperren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "concat": {
+            "Label": "Wert direkt in den SQL-String einsetzen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "parameter": {
+            "Label": "SQL-Code und Wert durch einen gebundenen Parameter trennen",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Eine kurze Blocklist verwenden",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "filter": {
+            "Label": "Nur verdächtige Zeichen ablehnen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "parameter": {
+            "Label": "Die Abfrage mit einem Parameter ausführen",
+            "Feedback": ""
+          },
+          "concat": {
+            "Label": "Die Eingabe in SQL-Text einfügen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "concat": {
+            "Label": "Zahlen direkt in SQL einfügen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "parameter": {
+            "Label": "Auch bei Zahlen und IDs Parameter verwenden",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "IDs nur im Browser prüfen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "concat": {
+            "Label": "Der App-Datenbank volle Rechte geben",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "parameter": {
+            "Label": "Datenbankrechte auf das notwendige Minimum begrenzen",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Rechte nur in der Dokumentation erwähnen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "concat": {
+            "Label": "Nur die Darstellung im Browser testen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "parameter": {
+            "Label": "Datenzugriff mit erwarteten Typen und Parametern testen",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Auf einen einzelnen Beispielwert vertrauen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "SQL Injection",
+    "LearningGoal": "Learn how parameterized queries keep values separate from SQL code.",
+    "Explanation": "The value remains a value; the SQL structure does not change. Parameters separate code from data. Escaping and blocklists are not equivalent protections. Least-privilege database access limits the impact.",
+    "Task": "Choose the measure that protects a local search query.",
+    "Impact": "An attacker could view local sample records outside the intended search.",
+    "ExpectedAfterFix": "Parameters keep query structure separate from values; minimal database permissions and tests add defence in depth.",
+    "Hints": [
+      "Parameters keep types and values separate from SQL code.",
+      "Input validation does not replace a parameterized query."
+    ],
+    "SolutionExplanation": "Parameters keep query structure separate from values; minimal database permissions and tests add defence in depth.",
+    "Example": {
+      "Context": "A local product search receives the term `laptop`.",
+      "RiskySnippet": "sql = \"SELECT * FROM Products WHERE Name = '\" + search + \"'\"",
+      "SaferSnippet": "command.CommandText = \"SELECT * FROM Products WHERE Name = @search\";\ncommand.Parameters.AddWithValue(\"@search\", search);",
+      "Takeaway": "The value remains a value; the SQL structure does not change.",
+      "KeyPoints": [
+        "Parameters separate code from data.",
+        "Escaping and blocklists are not equivalent protections.",
+        "Least-privilege database access limits the impact."
+      ]
+    },
+    "Protocol": {
+      "Method": "GET /products?name=…",
+      "Status": "200 OK",
+      "SecurityHeaders": "Content-Security-Policy; X-Content-Type-Options: nosniff",
+      "AuthenticationState": "No sign-in",
+      "AuthorizationResult": "The search term remains a bound value."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the measure that protects a local search query.",
+        "Options": {
+          "concat": {
+            "Label": "Build SQL text with string concatenation",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "parameter": {
+            "Label": "Use a parameterized query with a bound value",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Only block special characters",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "concat": {
+            "Label": "Insert the value directly into the SQL string",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "parameter": {
+            "Label": "Separate SQL code and value with a bound parameter",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Use a short blocklist",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "filter": {
+            "Label": "Only reject suspicious characters",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "parameter": {
+            "Label": "Execute the query with a parameter",
+            "Feedback": ""
+          },
+          "concat": {
+            "Label": "Insert the input into SQL text",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "concat": {
+            "Label": "Insert numbers directly into SQL",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "parameter": {
+            "Label": "Use parameters for numbers and IDs as well",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Validate IDs only in the browser",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "concat": {
+            "Label": "Give the application's database account full permissions",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "parameter": {
+            "Label": "Grant only the minimum database permissions needed",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Mention permissions only in documentation",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "concat": {
+            "Label": "Test only the browser display",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "parameter": {
+            "Label": "Test data access with expected types and parameters",
+            "Feedback": ""
+          },
+          "filter": {
+            "Label": "Trust a single example value",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

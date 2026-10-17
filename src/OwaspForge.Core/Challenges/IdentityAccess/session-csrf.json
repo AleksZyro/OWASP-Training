@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "session-csrf",
+    "CourseId": "identity-access",
+    "Order": 5,
+    "Category": "A07: Identification and Authentication Failures",
+    "Difficulty": "medium",
+    "DurationMinutes": 25,
+    "Points": 160,
+    "OfficialUrl": "https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html",
+    "DemoId": null
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "client-token",
+        "csrf-session",
+        "referer"
+      ],
+      "CorrectOption": "csrf-session"
+    },
+    {
+      "OptionValues": [
+        "client-token",
+        "csrf-session",
+        "referer"
+      ],
+      "CorrectOption": "csrf-session"
+    },
+    {
+      "OptionValues": [
+        "client-token",
+        "csrf-session",
+        "referer"
+      ],
+      "CorrectOption": "csrf-session"
+    },
+    {
+      "OptionValues": [
+        "client-token",
+        "csrf-session",
+        "referer"
+      ],
+      "CorrectOption": "csrf-session"
+    },
+    {
+      "OptionValues": [
+        "client-token",
+        "csrf-session",
+        "referer"
+      ],
+      "CorrectOption": "csrf-session"
+    },
+    {
+      "OptionValues": [
+        "client-token",
+        "csrf-session",
+        "referer"
+      ],
+      "CorrectOption": "csrf-session"
+    }
+  ],
+  "German": {
+    "Title": "Sitzungen und CSRF",
+    "LearningGoal": "Du schützt angemeldete lokale Aktionen gegen Sessiondiebstahl und fremde Formularanfragen.",
+    "Explanation": "Eine dauerhaft gültige Session-ID oder ein Formular ohne Anti-Forgery-Prüfung wäre intentionally vulnerable. Die Plattform verwendet sichere Cookies und serverseitig geprüfte Anti-Forgery-Tokens.",
+    "Task": "Wähle den Schutz für eine lokale Kontoänderung.",
+    "Impact": "Eine fremde Seite könnte sonst im Kontext einer angemeldeten Demoperson eine Aktion auslösen.",
+    "ExpectedAfterFix": "Die Aktion verlangt eine gültige Session, ein Anti-Forgery-Token und sichere Cookie-Attribute.",
+    "Hints": [
+      "CSRF-Schutz ergänzt Authentifizierung; er ersetzt sie nicht.",
+      "Cookies brauchen mindestens Secure, HttpOnly und passende SameSite-Regeln."
+    ],
+    "SolutionExplanation": "Sichere Cookie-Attribute, serverseitige Session-Invalidierung und Anti-Forgery-Prüfung schützen zustandsändernde Anfragen gemeinsam.",
+    "Example": {
+      "Context": "Eine angemeldete Person ändert ihre lokale E-Mail-Adresse.",
+      "RiskySnippet": "POST /account/email\nCookie: session=...",
+      "SaferSnippet": "POST /account/email\nCookie: secure session\nAnti-forgery token: validated",
+      "Takeaway": "Die Session allein genügt nicht: Der Server prüft die Herkunft der Aktion zusätzlich.",
+      "KeyPoints": [
+        "CSRF betrifft zustandsändernde Aktionen.",
+        "HttpOnly schützt vor Lesen, nicht vor jeder fremden Anfrage.",
+        "Anti-Forgery-Tokens werden serverseitig geprüft."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /account/email",
+      "Status": "400 Bad Request",
+      "SecurityHeaders": "Antiforgery-Cookie: HttpOnly; SameSite=Strict",
+      "AuthenticationState": "Gültige Session allein genügt nicht",
+      "AuthorizationResult": "Ohne gültigen Anti-Forgery-Token abgelehnt."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle den Schutz für eine lokale Kontoänderung.",
+        "Options": {
+          "client-token": {
+            "Label": "Token nur im Browser vergleichen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "csrf-session": {
+            "Label": "Serverseitiger Anti-Forgery-Check mit sicherem Session-Cookie",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Nur auf einen Referer-Header vertrauen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "client-token": {
+            "Label": "Nur eine JavaScript-Variable prüfen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "csrf-session": {
+            "Label": "Einen Anti-Forgery-Token bei jeder zustandsändernden Anfrage prüfen",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Den Token optional machen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "client-token": {
+            "Label": "Cookies für JavaScript lesbar machen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "csrf-session": {
+            "Label": "Cookies mit HttpOnly, Secure und passendem SameSite setzen",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Cookie-Attribute weglassen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "client-token": {
+            "Label": "Nur den Browser-Tab schliessen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "csrf-session": {
+            "Label": "Die Session nach Abmeldung serverseitig ungültig machen",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Das Cookie ohne Serverprüfung löschen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "client-token": {
+            "Label": "Sitzungen unbegrenzt gültig lassen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "csrf-session": {
+            "Label": "Sitzungen zeitlich begrenzen und bei Risiko neu prüfen",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Nur auf Seitenreload zählen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "client-token": {
+            "Label": "Kontoänderungen über GET ausführen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "csrf-session": {
+            "Label": "Zustandsänderungen nur mit POST und Schutzprüfung ausführen",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Den Schutz nur für sichtbare Formulare nutzen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Sessions and CSRF",
+    "LearningGoal": "Learn to protect authenticated actions with secure sessions and anti-forgery checks.",
+    "Explanation": "The session alone is not enough: the server also validates the request origin. CSRF applies to state-changing actions. HttpOnly protects reading, not every forged request. Anti-forgery tokens must be validated on the server.",
+    "Task": "Choose the protection for a local account change.",
+    "Impact": "A foreign page could trigger an action in the context of a signed-in demo user.",
+    "ExpectedAfterFix": "Secure cookie attributes, server-side session invalidation and anti-forgery validation protect state changes together.",
+    "Hints": [
+      "CSRF protection complements authentication; it does not replace it.",
+      "Cookies need Secure, HttpOnly and appropriate SameSite rules."
+    ],
+    "SolutionExplanation": "Secure cookie attributes, server-side session invalidation and anti-forgery validation protect state changes together.",
+    "Example": {
+      "Context": "A signed-in person changes their local email address.",
+      "RiskySnippet": "POST /account/email\nCookie: session=...",
+      "SaferSnippet": "POST /account/email\nCookie: secure session\nAnti-forgery token: validated",
+      "Takeaway": "The session alone is not enough: the server also validates the request origin.",
+      "KeyPoints": [
+        "CSRF applies to state-changing actions.",
+        "HttpOnly protects reading, not every forged request.",
+        "Anti-forgery tokens must be validated on the server."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /account/email",
+      "Status": "400 Bad Request",
+      "SecurityHeaders": "Antiforgery cookie: HttpOnly; SameSite=Strict",
+      "AuthenticationState": "A valid session alone is insufficient",
+      "AuthorizationResult": "The server rejects a request without a valid anti-forgery token."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the protection for a local account change.",
+        "Options": {
+          "client-token": {
+            "Label": "Compare tokens only in the browser",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "csrf-session": {
+            "Label": "Validate antiforgery on the server with a secure session cookie",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Trust only the Referer header",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "client-token": {
+            "Label": "Check only a JavaScript variable",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "csrf-session": {
+            "Label": "Validate an antiforgery token for each state-changing request",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Make the token optional",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "client-token": {
+            "Label": "Make cookies readable by JavaScript",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "csrf-session": {
+            "Label": "Use HttpOnly, Secure and suitable SameSite cookie attributes",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Omit cookie attributes",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "client-token": {
+            "Label": "Only close the browser tab",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "csrf-session": {
+            "Label": "Invalidate the session on the server after sign-out",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Delete the cookie without a server check",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "client-token": {
+            "Label": "Keep sessions valid forever",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "csrf-session": {
+            "Label": "Expire sessions and require renewed checks when risk changes",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Rely only on a page reload",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "client-token": {
+            "Label": "Change account data through GET",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "csrf-session": {
+            "Label": "Use POST with protection checks for state changes",
+            "Feedback": ""
+          },
+          "referer": {
+            "Label": "Protect only visible forms",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

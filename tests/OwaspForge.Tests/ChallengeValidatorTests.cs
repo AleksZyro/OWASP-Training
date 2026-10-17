@@ -64,6 +64,11 @@ public sealed class ChallengeValidatorTests
             Assert.Equal(6, challenge.Questions.Count);
             Assert.All(challenge.Questions, question => Assert.Equal(3, question.Options.Count));
             Assert.False(string.IsNullOrWhiteSpace(challenge.SolutionExplanation));
+            Assert.False(string.IsNullOrWhiteSpace(challenge.Example.Context));
+            Assert.False(string.IsNullOrWhiteSpace(challenge.Example.RiskySnippet));
+            Assert.False(string.IsNullOrWhiteSpace(challenge.Example.SaferSnippet));
+            Assert.Equal(3, challenge.Example.KeyPoints.Count);
+            Assert.All(challenge.Example.KeyPoints, point => Assert.False(string.IsNullOrWhiteSpace(point)));
             Assert.True(challenge.Questions.Select(question => string.Join('|', question.Options.Select(option => option.Label))).Distinct().Count() > 1);
         });
     }

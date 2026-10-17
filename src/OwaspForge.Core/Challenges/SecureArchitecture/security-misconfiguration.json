@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "security-misconfiguration",
+    "CourseId": "secure-architecture",
+    "Order": 9,
+    "Category": "A05: Security Misconfiguration",
+    "Difficulty": "easy",
+    "DurationMinutes": 25,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/Top10/A05_2021-Security_Misconfiguration/",
+    "DemoId": null
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "debug",
+        "secure-default",
+        "hide"
+      ],
+      "CorrectOption": "secure-default"
+    },
+    {
+      "OptionValues": [
+        "debug",
+        "secure-default",
+        "hide"
+      ],
+      "CorrectOption": "secure-default"
+    },
+    {
+      "OptionValues": [
+        "debug",
+        "secure-default",
+        "hide"
+      ],
+      "CorrectOption": "secure-default"
+    },
+    {
+      "OptionValues": [
+        "debug",
+        "secure-default",
+        "hide"
+      ],
+      "CorrectOption": "secure-default"
+    },
+    {
+      "OptionValues": [
+        "debug",
+        "secure-default",
+        "hide"
+      ],
+      "CorrectOption": "secure-default"
+    },
+    {
+      "OptionValues": [
+        "debug",
+        "secure-default",
+        "hide"
+      ],
+      "CorrectOption": "secure-default"
+    }
+  ],
+  "German": {
+    "Title": "Sicherheitskonfiguration",
+    "LearningGoal": "Du erkennst sichere Standardwerte für Fehler, HTTP-Header und lokale Bereitstellung.",
+    "Explanation": "Ein Debug-Stacktrace für Besuchende oder eine offene Bindung wäre intentionally vulnerable. OWASP Forge zeigt keine Stacktraces in der Oberfläche und bindet Dienste nur an localhost.",
+    "Task": "Wähle die sichere Standardkonfiguration.",
+    "Impact": "Fehlerdetails oder unnötig offene Dienste könnten interne Informationen preisgeben.",
+    "ExpectedAfterFix": "Produktionsähnliche lokale Einstellungen liefern neutrale Fehlerseiten, Schutz-Header und eine localhost-Bindung.",
+    "Hints": [
+      "Sichere Defaults müssen bewusst geprüft werden.",
+      "Debug-Ausgaben gehören in geschützte lokale Logs, nicht in die Benutzeroberfläche."
+    ],
+    "SolutionExplanation": "Sichere Defaults bedeuten neutrale Fehlerseiten, zentrale Schutz-Header, localhost-Bindung und regelmässig geprüfte Konfiguration.",
+    "Example": {
+      "Context": "Die Plattform läuft lokal und eine Anfrage löst einen Fehler aus.",
+      "RiskySnippet": "app.UseDeveloperExceptionPage();\nlisten on 0.0.0.0",
+      "SaferSnippet": "app.UseExceptionHandler(\"/Error\");\nlisten on 127.0.0.1",
+      "Takeaway": "Sichere Defaults begrenzen Informationen und Reichweite schon vor einer Fehlersuche.",
+      "KeyPoints": [
+        "Fehlerdetails gehören in geschützte Logs.",
+        "localhost-Bindung reduziert die erreichbare Fläche.",
+        "Header und Konfiguration sollten zentral geprüft werden."
+      ]
+    },
+    "Protocol": {
+      "Method": "GET /unknown-route",
+      "Status": "404 Not Found",
+      "SecurityHeaders": "CSP; X-Frame-Options: DENY; Referrer-Policy",
+      "AuthenticationState": "Keine Anmeldung",
+      "AuthorizationResult": "Neutrale Fehlerantwort ohne Stacktrace."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die sichere Standardkonfiguration.",
+        "Options": {
+          "debug": {
+            "Label": "Stacktraces und Debugmodus für alle anzeigen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-default": {
+            "Label": "Neutrale Fehlerseiten, Schutz-Header und localhost-Bindung",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Nur die Fehlermeldung im Browser verstecken",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "debug": {
+            "Label": "Stacktraces an Besuchende senden",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-default": {
+            "Label": "Stacktraces nur in geschützten lokalen Logs erfassen",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Serverfehler ignorieren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "debug": {
+            "Label": "An allen Netzwerkinterfaces lauschen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-default": {
+            "Label": "Dienste nur an localhost binden",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Die Portnummer geheim halten",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "debug": {
+            "Label": "Header nur pro einzelner Seite setzen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-default": {
+            "Label": "Sichere HTTP-Antwortheader zentral setzen",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Ohne Header auf Browser hoffen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "debug": {
+            "Label": "Debug-Endpunkte versteckt lassen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-default": {
+            "Label": "Debug- und Testendpunkte in der Freigabe entfernen",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Nur den Link aus dem Menü nehmen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "debug": {
+            "Label": "Konfiguration nur einmal festlegen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-default": {
+            "Label": "Konfiguration im Review und automatisiert prüfen",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Sichere Defaults nicht dokumentieren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Security Misconfiguration",
+    "LearningGoal": "Learn secure defaults for errors, headers and local service binding.",
+    "Explanation": "Safe defaults reduce information and exposure before troubleshooting starts. Error details belong in protected logs. Localhost binding reduces reachable surface. Headers and configuration should be checked centrally.",
+    "Task": "Choose the secure default configuration.",
+    "Impact": "Error details or unnecessarily exposed services could disclose internal information.",
+    "ExpectedAfterFix": "Safe defaults include neutral error pages, central security headers, localhost-only binding and reviewed configuration.",
+    "Hints": [
+      "Secure defaults need deliberate verification.",
+      "Debug output belongs in protected local logs, not the user interface."
+    ],
+    "SolutionExplanation": "Safe defaults include neutral error pages, central security headers, localhost-only binding and reviewed configuration.",
+    "Example": {
+      "Context": "The platform runs locally and a request causes an error.",
+      "RiskySnippet": "app.UseDeveloperExceptionPage();\nlisten on 0.0.0.0",
+      "SaferSnippet": "app.UseExceptionHandler(\"/Error\");\nlisten on 127.0.0.1",
+      "Takeaway": "Safe defaults reduce information and exposure before troubleshooting starts.",
+      "KeyPoints": [
+        "Error details belong in protected logs.",
+        "Localhost binding reduces reachable surface.",
+        "Headers and configuration should be checked centrally."
+      ]
+    },
+    "Protocol": {
+      "Method": "GET /unknown-route",
+      "Status": "404 Not Found",
+      "SecurityHeaders": "CSP; X-Frame-Options: DENY; Referrer-Policy",
+      "AuthenticationState": "No sign-in",
+      "AuthorizationResult": "A neutral error response contains no stack trace."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the secure default configuration.",
+        "Options": {
+          "debug": {
+            "Label": "Show stack traces and debug mode to everyone",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-default": {
+            "Label": "Use neutral errors, security headers and loopback binding",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Only hide the browser error message",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "debug": {
+            "Label": "Send stack traces to visitors",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-default": {
+            "Label": "Record stack traces only in protected local logs",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Ignore server errors",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "debug": {
+            "Label": "Listen on every network interface",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-default": {
+            "Label": "Bind services only to localhost",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Keep the port number secret",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "debug": {
+            "Label": "Set headers separately on each page",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-default": {
+            "Label": "Set security response headers centrally",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Rely on the browser without headers",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "debug": {
+            "Label": "Leave hidden debug endpoints",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-default": {
+            "Label": "Remove debug and test endpoints from the release",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Only remove the menu link",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "debug": {
+            "Label": "Configure once and never revisit",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-default": {
+            "Label": "Review and automatically validate configuration",
+            "Feedback": ""
+          },
+          "hide": {
+            "Label": "Leave safe defaults undocumented",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

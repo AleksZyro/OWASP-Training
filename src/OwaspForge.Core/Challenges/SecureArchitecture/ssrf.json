@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "ssrf",
+    "CourseId": "secure-architecture",
+    "Order": 7,
+    "Category": "A10: Server-Side Request Forgery",
+    "Difficulty": "medium",
+    "DurationMinutes": 25,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/Top10/A10_2021-Server-Side_Request_Forgery_%28SSRF%29/",
+    "DemoId": "ssrf"
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "blocklist",
+        "allowlist",
+        "redirect"
+      ],
+      "CorrectOption": "allowlist"
+    },
+    {
+      "OptionValues": [
+        "redirect",
+        "allowlist",
+        "blocklist"
+      ],
+      "CorrectOption": "allowlist"
+    },
+    {
+      "OptionValues": [
+        "blocklist",
+        "allowlist",
+        "redirect"
+      ],
+      "CorrectOption": "allowlist"
+    },
+    {
+      "OptionValues": [
+        "blocklist",
+        "allowlist",
+        "redirect"
+      ],
+      "CorrectOption": "allowlist"
+    },
+    {
+      "OptionValues": [
+        "blocklist",
+        "allowlist",
+        "redirect"
+      ],
+      "CorrectOption": "allowlist"
+    },
+    {
+      "OptionValues": [
+        "blocklist",
+        "allowlist",
+        "redirect"
+      ],
+      "CorrectOption": "allowlist"
+    }
+  ],
+  "German": {
+    "Title": "SSRF-Grundlagen",
+    "LearningGoal": "Du begrenzt serverseitige Abrufe auf explizite lokale Mock-Ziele.",
+    "Explanation": "Die historische Abrufidee ist intentionally vulnerable, weil sie eine beliebige Adresse akzeptiert. OWASP Forge ruft nie eine vom Client angegebene URL auf: die sichere Demo arbeitet nur mit einer festen lokalen Mock-Kennung.",
+    "Task": "Wähle die sichere Abrufregel.",
+    "Impact": "Ein Server könnte sonst interne oder externe Ziele im falschen Kontext anfragen.",
+    "ExpectedAfterFix": "Nur eine registrierte Mock-Ressource wird verarbeitet; beliebige URLs werden abgelehnt und Container haben kein Netzwerk.",
+    "Hints": [
+      "Eine Blocklist kann unbekannte Ziele übersehen.",
+      "Nimm eine feste Allowlist von Namen, nicht URLs vom Client."
+    ],
+    "SolutionExplanation": "Eine feste Mock-Allowlist verhindert, dass Eingaben einen Netzwerkpfad bestimmen. Container ohne ausgehendes Netzwerk bilden eine zweite Schutzgrenze.",
+    "Example": {
+      "Context": "Die Oberfläche soll eine lokale Beispielressource anzeigen.",
+      "RiskySnippet": "Fetch(requestedUrl)",
+      "SaferSnippet": "Fetch(LocalMocks[\"catalogue\"])",
+      "Takeaway": "Die Eingabe wählt keinen Netzwerkpfad; nur bekannte Mock-Kennungen sind erlaubt.",
+      "KeyPoints": [
+        "Eine Allowlist ist enger als eine Blocklist.",
+        "Validierung muss vor jedem Abruf passieren.",
+        "Kein ausgehendes Container-Netzwerk ist eine zweite Grenze."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /mock-resource",
+      "Status": "400 Bad Request",
+      "SecurityHeaders": "Kein ausgehender Netzwerk-Header",
+      "AuthenticationState": "Keine Anmeldung",
+      "AuthorizationResult": "Nur die feste Kennung catalogue wird aufgelöst."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die sichere Abrufregel.",
+        "Options": {
+          "blocklist": {
+            "Label": "Einige Hostnamen blockieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "allowlist": {
+            "Label": "Nur feste lokale Mock-Kennungen aus einer Allowlist akzeptieren",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Weiterleitungen erst nach dem Abruf prüfen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "redirect": {
+            "Label": "Die Antwort nach einer beliebigen Anfrage prüfen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "allowlist": {
+            "Label": "Eine feste Kennungs-Allowlist ohne Client-URL verwenden",
+            "Feedback": ""
+          },
+          "blocklist": {
+            "Label": "Nur bekannte Hostnamen sperren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "blocklist": {
+            "Label": "Unbekannte Ziele bleiben trotzdem möglich",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "allowlist": {
+            "Label": "Es gibt keinen frei wählbaren Netzwerkausgang",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Der erste Abruf findet bereits statt",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "blocklist": {
+            "Label": "Client-URLs in Host und Pfad zerlegen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "allowlist": {
+            "Label": "Nur serverseitig konfigurierte Ziele auflösen",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Weiterleitungen automatisch folgen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "blocklist": {
+            "Label": "Das Netzwerk für spätere Flexibilität öffnen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "allowlist": {
+            "Label": "Container ohne ausgehendes Netzwerk betreiben",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Nur den Browser einschränken",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "blocklist": {
+            "Label": "Komplette Geheimnisse in Logs speichern",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "allowlist": {
+            "Label": "Abrufversuche mit sicherem Kontext protokollieren",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Fehlversuche nie erfassen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "SSRF Basics",
+    "LearningGoal": "Learn to restrict server-side requests to fixed local mock targets.",
+    "Explanation": "Input does not choose a network path; only known mock identifiers are allowed. An allowlist is narrower than a blocklist. Validation must happen before any request. No outbound container network is a second boundary.",
+    "Task": "Choose the safe rule for resolving a local resource.",
+    "Impact": "A server could otherwise contact internal or external targets in the wrong context.",
+    "ExpectedAfterFix": "A fixed mock allowlist and disabled container networking prevent user input from choosing a network path.",
+    "Hints": [
+      "A blocklist can miss unknown destinations.",
+      "Use a fixed allowlist of names, not URLs supplied by the client."
+    ],
+    "SolutionExplanation": "A fixed mock allowlist and disabled container networking prevent user input from choosing a network path.",
+    "Example": {
+      "Context": "The interface should show one local example resource.",
+      "RiskySnippet": "Fetch(requestedUrl)",
+      "SaferSnippet": "Fetch(LocalMocks[\"catalogue\"])",
+      "Takeaway": "Input does not choose a network path; only known mock identifiers are allowed.",
+      "KeyPoints": [
+        "An allowlist is narrower than a blocklist.",
+        "Validation must happen before any request.",
+        "No outbound container network is a second boundary."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /mock-resource",
+      "Status": "400 Bad Request",
+      "SecurityHeaders": "No outbound network header",
+      "AuthenticationState": "No sign-in",
+      "AuthorizationResult": "Only the fixed catalogue key resolves."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the safe rule for resolving a local resource.",
+        "Options": {
+          "blocklist": {
+            "Label": "Block some hostnames",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "allowlist": {
+            "Label": "Accept only fixed local mock keys from an allowlist",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Check redirects only after making the request",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "redirect": {
+            "Label": "Inspect the response after an arbitrary request",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "allowlist": {
+            "Label": "Use a fixed key allowlist without client URLs",
+            "Feedback": ""
+          },
+          "blocklist": {
+            "Label": "Block only known hostnames",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "blocklist": {
+            "Label": "Unknown targets remain possible",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "allowlist": {
+            "Label": "There is no freely selectable network destination",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "The first request has already happened",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "blocklist": {
+            "Label": "Split client URLs into host and path",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "allowlist": {
+            "Label": "Resolve only server-configured targets",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Automatically follow redirects",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "blocklist": {
+            "Label": "Open the network for future flexibility",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "allowlist": {
+            "Label": "Run containers without outbound networking",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Restrict only the browser",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "blocklist": {
+            "Label": "Store complete secrets in logs",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "allowlist": {
+            "Label": "Log attempted requests with safe context",
+            "Feedback": ""
+          },
+          "redirect": {
+            "Label": "Never record failed attempts",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

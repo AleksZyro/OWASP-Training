@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "supply-chain-integrity",
+    "CourseId": "supply-chain",
+    "Order": 11,
+    "Category": "A08: Software and Data Integrity Failures",
+    "Difficulty": "medium",
+    "DurationMinutes": 25,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/Top10/A08_2021-Software_and_Data_Integrity_Failures/",
+    "DemoId": null
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "trust",
+        "verify",
+        "after"
+      ],
+      "CorrectOption": "verify"
+    },
+    {
+      "OptionValues": [
+        "trust",
+        "verify",
+        "after"
+      ],
+      "CorrectOption": "verify"
+    },
+    {
+      "OptionValues": [
+        "trust",
+        "verify",
+        "after"
+      ],
+      "CorrectOption": "verify"
+    },
+    {
+      "OptionValues": [
+        "trust",
+        "verify",
+        "after"
+      ],
+      "CorrectOption": "verify"
+    },
+    {
+      "OptionValues": [
+        "trust",
+        "verify",
+        "after"
+      ],
+      "CorrectOption": "verify"
+    },
+    {
+      "OptionValues": [
+        "trust",
+        "verify",
+        "after"
+      ],
+      "CorrectOption": "verify"
+    }
+  ],
+  "German": {
+    "Title": "Integrität der Lieferkette",
+    "LearningGoal": "Du prüfst, woher Artefakte stammen und wie Build- und Freigabeprozesse geschützt sind.",
+    "Explanation": "Ein ungeprüftes Paket oder ein Artefakt aus unbekannter Quelle wäre intentionally vulnerable. Die Lernstation arbeitet nur mit lokalen Beispielen und führt keine Fremdartefakte aus.",
+    "Task": "Wähle die Kontrolle vor einer lokalen Freigabe.",
+    "Impact": "Manipulierte Artefakte oder Daten könnten unbemerkt in eine Anwendung gelangen.",
+    "ExpectedAfterFix": "Die Herkunft ist nachvollziehbar, Integrität wird geprüft und der Build erzeugt reproduzierbare Artefakte.",
+    "Hints": [
+      "Vertrauen in eine Quelle braucht überprüfbare Herkunft.",
+      "Eine Integritätsprüfung muss vor der Verwendung stattfinden."
+    ],
+    "SolutionExplanation": "Nachvollziehbare Herkunft, Integritätsprüfungen und kontrollierte Freigaben schützen die gesamte Build- und Lieferkette.",
+    "Example": {
+      "Context": "Ein lokaler Build erhält ein neues Artefakt.",
+      "RiskySnippet": "Use artifact because its filename looks familiar",
+      "SaferSnippet": "Verify source and hash before the build uses it",
+      "Takeaway": "Herkunft und Integrität müssen vor der Verwendung geprüft werden.",
+      "KeyPoints": [
+        "Ein Dateiname beweist keine Herkunft.",
+        "Hash oder Signatur muss vor der Nutzung geprüft werden.",
+        "Freigaben und Build-Rechte brauchen klare Verantwortliche."
+      ]
+    },
+    "Protocol": {
+      "Method": "",
+      "Status": "",
+      "SecurityHeaders": "",
+      "AuthenticationState": "",
+      "AuthorizationResult": ""
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die Kontrolle vor einer lokalen Freigabe.",
+        "Options": {
+          "trust": {
+            "Label": "Ein Artefakt wegen seines Namens vertrauen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "verify": {
+            "Label": "Herkunft, Signatur oder Hash vor Verwendung prüfen",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Integrität erst nach der Ausführung prüfen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "trust": {
+            "Label": "Dateien aus beliebigen Quellen laden",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "verify": {
+            "Label": "Artefakte aus bekannten Quellen nachvollziehbar beziehen",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Herkunft später dokumentieren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "trust": {
+            "Label": "Lokale Handarbeit nicht dokumentieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "verify": {
+            "Label": "Build-Artefakte reproduzierbar erzeugen",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Nur das Endergebnis speichern",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "trust": {
+            "Label": "Allen Build-Zugriff geben",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "verify": {
+            "Label": "Freigaberechte auf wenige verantwortliche Konten begrenzen",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Freigaben ohne Audit erlauben",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "trust": {
+            "Label": "Prüfungen optional machen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "verify": {
+            "Label": "Automatisierte Prüfungen vor dem Veröffentlichen ausführen",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Prüfungen erst nach Release starten",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "trust": {
+            "Label": "Abweichungen als Zufall akzeptieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "verify": {
+            "Label": "Integritätsfehler stoppen und untersuchen",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Trotz Fehler weiterverteilen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Supply Chain Integrity",
+    "LearningGoal": "Learn to verify artifact origin and protect release controls.",
+    "Explanation": "Origin and integrity must be checked before use. A filename does not prove origin. Verify a hash or signature before use. Release and build rights need clear ownership.",
+    "Task": "Choose the control before a local release.",
+    "Impact": "Modified artifacts or data could enter an application unnoticed.",
+    "ExpectedAfterFix": "Verifiable origin, integrity checks and controlled releases protect the build and delivery chain.",
+    "Hints": [
+      "Trust in a source requires verifiable provenance.",
+      "Check integrity before use."
+    ],
+    "SolutionExplanation": "Verifiable origin, integrity checks and controlled releases protect the build and delivery chain.",
+    "Example": {
+      "Context": "A local build receives a new artifact.",
+      "RiskySnippet": "Use artifact because its filename looks familiar",
+      "SaferSnippet": "Verify source and hash before the build uses it",
+      "Takeaway": "Origin and integrity must be checked before use.",
+      "KeyPoints": [
+        "A filename does not prove origin.",
+        "Verify a hash or signature before use.",
+        "Release and build rights need clear ownership."
+      ]
+    },
+    "Protocol": {
+      "Method": "",
+      "Status": "",
+      "SecurityHeaders": "",
+      "AuthenticationState": "",
+      "AuthorizationResult": ""
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the control before a local release.",
+        "Options": {
+          "trust": {
+            "Label": "Trust an artifact because its name looks familiar",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "verify": {
+            "Label": "Verify origin, signature or hash before use",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Verify integrity only after execution",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "trust": {
+            "Label": "Download files from arbitrary sources",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "verify": {
+            "Label": "Obtain artifacts traceably from known sources",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Document origin later",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "trust": {
+            "Label": "Leave manual build steps undocumented",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "verify": {
+            "Label": "Generate reproducible build artifacts",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Store only the final output",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "trust": {
+            "Label": "Give everyone build access",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "verify": {
+            "Label": "Limit release permissions to responsible accounts",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Allow releases without an audit trail",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "trust": {
+            "Label": "Make checks optional",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "verify": {
+            "Label": "Run automated checks before publication",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Start checks only after release",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "trust": {
+            "Label": "Dismiss differences as coincidence",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "verify": {
+            "Label": "Stop and investigate integrity failures",
+            "Feedback": ""
+          },
+          "after": {
+            "Label": "Distribute despite failures",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

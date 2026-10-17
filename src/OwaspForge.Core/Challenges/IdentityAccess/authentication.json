@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "authentication",
+    "CourseId": "identity-access",
+    "Order": 4,
+    "Category": "A07: Identification and Authentication Failures",
+    "Difficulty": "medium",
+    "DurationMinutes": 30,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/",
+    "DemoId": "authentication"
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "plain",
+        "secure-auth",
+        "captcha"
+      ],
+      "CorrectOption": "secure-auth"
+    },
+    {
+      "OptionValues": [
+        "captcha",
+        "secure-auth",
+        "plain"
+      ],
+      "CorrectOption": "secure-auth"
+    },
+    {
+      "OptionValues": [
+        "plain",
+        "secure-auth",
+        "captcha"
+      ],
+      "CorrectOption": "secure-auth"
+    },
+    {
+      "OptionValues": [
+        "plain",
+        "secure-auth",
+        "captcha"
+      ],
+      "CorrectOption": "secure-auth"
+    },
+    {
+      "OptionValues": [
+        "plain",
+        "secure-auth",
+        "captcha"
+      ],
+      "CorrectOption": "secure-auth"
+    },
+    {
+      "OptionValues": [
+        "plain",
+        "secure-auth",
+        "captcha"
+      ],
+      "CorrectOption": "secure-auth"
+    }
+  ],
+  "German": {
+    "Title": "Unsichere Authentifizierung",
+    "LearningGoal": "Du kombinierst Passwort-Hashing, Session-Prüfung und Rate Limits.",
+    "Explanation": "Die historische Login-Logik ist intentionally vulnerable: sie vergleicht einen Demo-String direkt. Die sichere Variante verwendet einen Passwort-Hasher, serverseitige Session-Prüfung und Limits für Fehlversuche.",
+    "Task": "Wähle das vollständige lokale Schutzpaket.",
+    "Impact": "Konten könnten durch triviale Prüfungen oder viele Versuche gefährdet sein.",
+    "ExpectedAfterFix": "Passwörter werden nie im Klartext gespeichert, Sitzungen werden serverseitig geprüft und Fehlversuche begrenzt.",
+    "Hints": [
+      "Ein Hash ist kein Verschlüsselungsschlüssel.",
+      "Rate Limits ergänzen, aber ersetzen keine sichere Passwortspeicherung."
+    ],
+    "SolutionExplanation": "Ein Passwort-Hash, serverseitige Session-Prüfung, Session-Erneuerung und Rate Limits schützen unterschiedliche Teile des Anmeldevorgangs gemeinsam.",
+    "Example": {
+      "Context": "Ein lokales Konto meldet sich mit einem Platzhalterpasswort an.",
+      "RiskySnippet": "if (password == storedPassword) SignIn();",
+      "SaferSnippet": "if (passwordHasher.Verify(hash, password))\n    CreateServerSessionWithRateLimit();",
+      "Takeaway": "Ein Hash schützt das Passwort; Session und Limit schützen den Ablauf.",
+      "KeyPoints": [
+        "Passwörter werden gehasht, nicht reversibel verschlüsselt.",
+        "Session-Erneuerung reduziert Session-Fixation-Risiken.",
+        "Rate Limits müssen serverseitig gelten."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /sessions",
+      "Status": "401 Unauthorized",
+      "SecurityHeaders": "Set-Cookie: HttpOnly; SameSite=Strict",
+      "AuthenticationState": "Keine gültige Session",
+      "AuthorizationResult": "Fehler bleibt allgemein; Rate Limit schützt weitere Versuche."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle das vollständige lokale Schutzpaket.",
+        "Options": {
+          "plain": {
+            "Label": "Passwort direkt vergleichen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-auth": {
+            "Label": "Hashing, serverseitige Session-Prüfung und Rate Limit kombinieren",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Nur ein Captcha hinzufügen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "captcha": {
+            "Label": "Nur ein Captcha anzeigen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-auth": {
+            "Label": "Passwort-Hash, serverseitige Session und Limit verwenden",
+            "Feedback": ""
+          },
+          "plain": {
+            "Label": "Das Passwort im Klartext vergleichen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "plain": {
+            "Label": "Weitere Klartextvergleiche erlauben",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-auth": {
+            "Label": "Ein serverseitiges Rate Limit ergänzen",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Das Limit nur im Browser anzeigen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "plain": {
+            "Label": "Passwörter reversibel verschlüsseln",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-auth": {
+            "Label": "Einen etablierten Passwort-Hasher mit Salt verwenden",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Passwörter in Logs vergleichen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "plain": {
+            "Label": "Die bestehende Session-ID weiterverwenden",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-auth": {
+            "Label": "Nach Login die Session-ID erneuern",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Nur die Login-Seite neu laden",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "plain": {
+            "Label": "Ein dauerhaftes Wiederherstellungskennwort senden",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "secure-auth": {
+            "Label": "Kontowiederherstellung mit zeitlich begrenzten Einmal-Token gestalten",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Den Token in die URL-Logs schreiben",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Insecure Authentication",
+    "LearningGoal": "Learn to combine password hashing, sessions and rate limiting.",
+    "Explanation": "A hash protects the password; session and limit protect the flow. Passwords are hashed, not reversibly encrypted. Session renewal reduces session-fixation risk. Rate limits must be enforced on the server.",
+    "Task": "Choose the complete protection for a local sign-in flow.",
+    "Impact": "Trivial checks or many repeated attempts could put accounts at risk.",
+    "ExpectedAfterFix": "Password hashing, secure server sessions, renewal and rate limits protect different stages of sign-in.",
+    "Hints": [
+      "A hash is not an encryption key.",
+      "Rate limits complement secure password storage; they do not replace it."
+    ],
+    "SolutionExplanation": "Password hashing, secure server sessions, renewal and rate limits protect different stages of sign-in.",
+    "Example": {
+      "Context": "A local account signs in with a placeholder password.",
+      "RiskySnippet": "if (password == storedPassword) SignIn();",
+      "SaferSnippet": "if (passwordHasher.Verify(hash, password))\n    CreateServerSessionWithRateLimit();",
+      "Takeaway": "A hash protects the password; session and limit protect the flow.",
+      "KeyPoints": [
+        "Passwords are hashed, not reversibly encrypted.",
+        "Session renewal reduces session-fixation risk.",
+        "Rate limits must be enforced on the server."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /sessions",
+      "Status": "401 Unauthorized",
+      "SecurityHeaders": "Set-Cookie: HttpOnly; SameSite=Strict",
+      "AuthenticationState": "No valid session",
+      "AuthorizationResult": "The response stays generic and rate limiting protects further attempts."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the complete protection for a local sign-in flow.",
+        "Options": {
+          "plain": {
+            "Label": "Compare the password directly",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-auth": {
+            "Label": "Combine hashing, server-side session checks and rate limiting",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Only add a CAPTCHA",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "captcha": {
+            "Label": "Only show a CAPTCHA",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-auth": {
+            "Label": "Use a password hash, server-side session and attempt limit",
+            "Feedback": ""
+          },
+          "plain": {
+            "Label": "Compare the password as plaintext",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "plain": {
+            "Label": "Allow more plaintext comparisons",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-auth": {
+            "Label": "Add a server-side rate limit",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Show the limit only in the browser",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "plain": {
+            "Label": "Encrypt passwords reversibly",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-auth": {
+            "Label": "Use an established salted password hasher",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Compare passwords in logs",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "plain": {
+            "Label": "Reuse the existing session ID",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-auth": {
+            "Label": "Renew the session ID after sign-in",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Only reload the login page",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "plain": {
+            "Label": "Send a permanent recovery password",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "secure-auth": {
+            "Label": "Use time-limited, single-use recovery tokens",
+            "Feedback": ""
+          },
+          "captcha": {
+            "Label": "Write the token into URL logs",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

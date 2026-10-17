@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "dependencies-sbom",
+    "CourseId": "supply-chain",
+    "Order": 10,
+    "Category": "A06: Vulnerable and Outdated Components",
+    "Difficulty": "easy",
+    "DurationMinutes": 20,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/Top10/A06_2021-Vulnerable_and_Outdated_Components/",
+    "DemoId": null
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "ignore",
+        "inventory",
+        "latest"
+      ],
+      "CorrectOption": "inventory"
+    },
+    {
+      "OptionValues": [
+        "ignore",
+        "inventory",
+        "latest"
+      ],
+      "CorrectOption": "inventory"
+    },
+    {
+      "OptionValues": [
+        "ignore",
+        "inventory",
+        "latest"
+      ],
+      "CorrectOption": "inventory"
+    },
+    {
+      "OptionValues": [
+        "ignore",
+        "inventory",
+        "latest"
+      ],
+      "CorrectOption": "inventory"
+    },
+    {
+      "OptionValues": [
+        "ignore",
+        "inventory",
+        "latest"
+      ],
+      "CorrectOption": "inventory"
+    },
+    {
+      "OptionValues": [
+        "ignore",
+        "inventory",
+        "latest"
+      ],
+      "CorrectOption": "inventory"
+    }
+  ],
+  "German": {
+    "Title": "Abhängigkeiten und SBOM",
+    "LearningGoal": "Du hältst Komponenten nachvollziehbar, aktuell und auf bekannte Schwachstellen geprüft.",
+    "Explanation": "Eine unüberblickte Bibliothek ohne Versionspflege wäre intentionally vulnerable. Diese Station führt keine externen Scans aus, sondern lehrt lokale Inventarisierung und Updates.",
+    "Task": "Wähle den sicheren Umgang mit einer Projektabhängigkeit.",
+    "Impact": "Bekannte Schwachstellen in Komponenten können die gesamte Anwendung betreffen.",
+    "ExpectedAfterFix": "Abhängigkeiten sind inventarisiert, auf Schwachstellen geprüft und kontrolliert aktualisiert.",
+    "Hints": [
+      "Eine SBOM macht Komponenten sichtbar, ersetzt aber keine Pflege.",
+      "Updates sollen getestet und nachvollziehbar erfolgen."
+    ],
+    "SolutionExplanation": "Ein Inventar schafft Transparenz. Hinweise werden bewertet, Änderungen getestet und nicht mehr benötigte Komponenten entfernt.",
+    "Example": {
+      "Context": "Das Projekt ergänzt eine Bibliothek für PDF-Erzeugung.",
+      "RiskySnippet": "Install package and forget its version",
+      "SaferSnippet": "Record package in SBOM; review advisory; test update",
+      "Takeaway": "Ein Inventar macht Abhängigkeiten prüfbar statt unsichtbar.",
+      "KeyPoints": [
+        "Eine SBOM erfasst direkte und transitive Komponenten.",
+        "Warnungen müssen bewertet, nicht blind akzeptiert werden.",
+        "Updates gehören in einen getesteten, nachvollziehbaren Ablauf."
+      ]
+    },
+    "Protocol": {
+      "Method": "",
+      "Status": "",
+      "SecurityHeaders": "",
+      "AuthenticationState": "",
+      "AuthorizationResult": ""
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle den sicheren Umgang mit einer Projektabhängigkeit.",
+        "Options": {
+          "ignore": {
+            "Label": "Versionen ohne Inventar unverändert lassen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "inventory": {
+            "Label": "SBOM pflegen, Hinweise prüfen und Updates testen",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Jede Version automatisch ohne Test übernehmen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "ignore": {
+            "Label": "Nur direkte Pakete notieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "inventory": {
+            "Label": "Komponenten, Versionen und Herkunft inventarisieren",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Erst nach einem Vorfall suchen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "ignore": {
+            "Label": "Warnungen grundsätzlich ignorieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "inventory": {
+            "Label": "Bekannte Schwachstellen vor einem Update bewerten",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Patches ohne Test sofort veröffentlichen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "ignore": {
+            "Label": "Abhängigkeiten nie aktualisieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "inventory": {
+            "Label": "Updates in einer lokalen Testumgebung prüfen",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Nur im Produktionsbetrieb testen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "ignore": {
+            "Label": "Unbenutzte Pakete behalten",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "inventory": {
+            "Label": "Nicht mehr benötigte Abhängigkeiten entfernen",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Mehr Pakete für alle Fälle installieren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "ignore": {
+            "Label": "Versionen nur im Gedächtnis behalten",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "inventory": {
+            "Label": "Den Abhängigkeitsstand nachvollziehbar dokumentieren",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Lock-Dateien ohne Prüfung ändern",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Dependencies and SBOM",
+    "LearningGoal": "Learn to inventory, assess and maintain project dependencies.",
+    "Explanation": "An inventory makes dependencies reviewable instead of invisible. An SBOM records direct and transitive components. Advisories need assessment, not blind acceptance. Updates belong in a tested, traceable process.",
+    "Task": "Choose how to maintain a project dependency securely.",
+    "Impact": "Known component vulnerabilities can affect the entire application.",
+    "ExpectedAfterFix": "An inventory makes components visible; assess advisories, test changes and remove unused dependencies.",
+    "Hints": [
+      "An SBOM makes components visible but does not replace maintenance.",
+      "Updates should be tested and traceable."
+    ],
+    "SolutionExplanation": "An inventory makes components visible; assess advisories, test changes and remove unused dependencies.",
+    "Example": {
+      "Context": "The project adds a library for PDF creation.",
+      "RiskySnippet": "Install package and forget its version",
+      "SaferSnippet": "Record package in SBOM; review advisory; test update",
+      "Takeaway": "An inventory makes dependencies reviewable instead of invisible.",
+      "KeyPoints": [
+        "An SBOM records direct and transitive components.",
+        "Advisories need assessment, not blind acceptance.",
+        "Updates belong in a tested, traceable process."
+      ]
+    },
+    "Protocol": {
+      "Method": "",
+      "Status": "",
+      "SecurityHeaders": "",
+      "AuthenticationState": "",
+      "AuthorizationResult": ""
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose how to maintain a project dependency securely.",
+        "Options": {
+          "ignore": {
+            "Label": "Leave versions unchanged without an inventory",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "inventory": {
+            "Label": "Maintain an SBOM, review advisories and test updates",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Apply every update automatically without testing",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "ignore": {
+            "Label": "Record only direct packages",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "inventory": {
+            "Label": "Inventory components, versions and origins",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Investigate only after an incident",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "ignore": {
+            "Label": "Ignore warnings by default",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "inventory": {
+            "Label": "Assess known vulnerabilities before updating",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Publish patches immediately without testing",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "ignore": {
+            "Label": "Never update dependencies",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "inventory": {
+            "Label": "Check updates in a local test environment",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Test only in production",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "ignore": {
+            "Label": "Keep unused packages",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "inventory": {
+            "Label": "Remove dependencies that are no longer needed",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Install extra packages just in case",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "ignore": {
+            "Label": "Remember versions mentally",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "inventory": {
+            "Label": "Document the dependency state traceably",
+            "Feedback": ""
+          },
+          "latest": {
+            "Label": "Change lockfiles without review",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "logging-monitoring",
+    "CourseId": "supply-chain",
+    "Order": 12,
+    "Category": "A09: Security Logging and Monitoring Failures",
+    "Difficulty": "easy",
+    "DurationMinutes": 20,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/Top10/A09_2021-Security_Logging_and_Monitoring_Failures/",
+    "DemoId": null
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "secrets",
+        "structured",
+        "none"
+      ],
+      "CorrectOption": "structured"
+    },
+    {
+      "OptionValues": [
+        "secrets",
+        "structured",
+        "none"
+      ],
+      "CorrectOption": "structured"
+    },
+    {
+      "OptionValues": [
+        "secrets",
+        "structured",
+        "none"
+      ],
+      "CorrectOption": "structured"
+    },
+    {
+      "OptionValues": [
+        "secrets",
+        "structured",
+        "none"
+      ],
+      "CorrectOption": "structured"
+    },
+    {
+      "OptionValues": [
+        "secrets",
+        "structured",
+        "none"
+      ],
+      "CorrectOption": "structured"
+    },
+    {
+      "OptionValues": [
+        "secrets",
+        "structured",
+        "none"
+      ],
+      "CorrectOption": "structured"
+    }
+  ],
+  "German": {
+    "Title": "Logging und Monitoring",
+    "LearningGoal": "Du protokollierst sicherheitsrelevante Ereignisse ohne Geheimnisse und machst Auffälligkeiten nachvollziehbar.",
+    "Explanation": "Gar keine Login-Fehler zu erfassen oder Passwörter mitzuloggen wäre intentionally vulnerable. Die Plattform protokolliert strukturiert und ohne geheime Werte.",
+    "Task": "Wähle die sichere Protokollierungsregel.",
+    "Impact": "Ohne brauchbare Ereignisse bleiben Missbrauch und Fehler unbemerkt; Geheimnisse in Logs vergrössern den Schaden.",
+    "ExpectedAfterFix": "Ereignisse enthalten Kontext und Zeit, aber keine Passwörter, Tokens oder vollständigen sensiblen Inhalte.",
+    "Hints": [
+      "Ein Logeintrag soll bei einer Untersuchung helfen, ohne Geheimnisse zu verraten.",
+      "Strukturierte Felder sind besser auswertbar als zusammengesetzte Textlogs."
+    ],
+    "SolutionExplanation": "Strukturierte, geschützte Logs machen Auffälligkeiten untersuchbar, ohne Passwörter, Tokens oder andere Geheimnisse preiszugeben.",
+    "Example": {
+      "Context": "Ein lokaler Anmeldeversuch schlägt fehl.",
+      "RiskySnippet": "Log(\"Login failed: password={password}\")",
+      "SaferSnippet": "LogWarning(\"Login failed for account {AccountId}\", accountId)",
+      "Takeaway": "Ein nützliches Log beschreibt das Ereignis, nicht das Geheimnis.",
+      "KeyPoints": [
+        "Logs brauchen Zeit, Ereignistyp und sicheren Kontext.",
+        "Passwörter und Tokens sind niemals Diagnosefelder.",
+        "Alarme sollten auf überprüfbaren Mustern beruhen."
+      ]
+    },
+    "Protocol": {
+      "Method": "",
+      "Status": "",
+      "SecurityHeaders": "",
+      "AuthenticationState": "",
+      "AuthorizationResult": ""
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die sichere Protokollierungsregel.",
+        "Options": {
+          "secrets": {
+            "Label": "Passwörter und Tokens zur Diagnose protokollieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "structured": {
+            "Label": "Sicherheitsereignisse strukturiert und ohne Geheimnisse erfassen",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Fehlgeschlagene Aktionen gar nicht erfassen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "secrets": {
+            "Label": "Vollständige Eingaben speichern",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "structured": {
+            "Label": "Zeit, Ereignistyp und sichere Kontextfelder erfassen",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Nur unstrukturierte Zufallstexte schreiben",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "secrets": {
+            "Label": "Eingegebene Passwörter erfassen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "structured": {
+            "Label": "Login-Fehlschläge ohne Passwortinhalt erfassen",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Login-Fehler nicht protokollieren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "secrets": {
+            "Label": "Logs öffentlich verfügbar machen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "structured": {
+            "Label": "Logzugriff und Aufbewahrung gezielt schützen",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Logs unbegrenzt ungeschützt speichern",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "secrets": {
+            "Label": "Bei jedem Ereignis unpriorisiert alarmieren",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "structured": {
+            "Label": "Auffällige Ereignisse überprüfbar alarmieren",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Nie auf Muster reagieren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "secrets": {
+            "Label": "Geheimnisse als Korrelationswert nutzen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "structured": {
+            "Label": "Ereignisse für Diagnose und Nachvollziehbarkeit korrelierbar halten",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Keine eindeutigen Ereigniskennungen verwenden",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Logging and Monitoring",
+    "LearningGoal": "Learn to record security events without logging secrets.",
+    "Explanation": "A useful log describes the event, not the secret. Logs need time, event type and safe context. Passwords and tokens are never diagnostic fields. Alerts should be based on reviewable patterns.",
+    "Task": "Choose the safe logging rule.",
+    "Impact": "Missing events hide abuse and errors; secrets in logs increase the impact.",
+    "ExpectedAfterFix": "Structured protected logs support investigation without exposing passwords, tokens or other secrets.",
+    "Hints": [
+      "A log entry should help investigation without revealing secrets.",
+      "Structured fields are easier to query than concatenated text logs."
+    ],
+    "SolutionExplanation": "Structured protected logs support investigation without exposing passwords, tokens or other secrets.",
+    "Example": {
+      "Context": "A local sign-in attempt fails.",
+      "RiskySnippet": "Log(\"Login failed: password={password}\")",
+      "SaferSnippet": "LogWarning(\"Login failed for account {AccountId}\", accountId)",
+      "Takeaway": "A useful log describes the event, not the secret.",
+      "KeyPoints": [
+        "Logs need time, event type and safe context.",
+        "Passwords and tokens are never diagnostic fields.",
+        "Alerts should be based on reviewable patterns."
+      ]
+    },
+    "Protocol": {
+      "Method": "",
+      "Status": "",
+      "SecurityHeaders": "",
+      "AuthenticationState": "",
+      "AuthorizationResult": ""
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the safe logging rule.",
+        "Options": {
+          "secrets": {
+            "Label": "Log passwords and tokens for diagnosis",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "structured": {
+            "Label": "Record security events in structured form without secrets",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Do not record failed actions",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "secrets": {
+            "Label": "Store all submitted input",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "structured": {
+            "Label": "Record timestamps, event types and safe context",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Write only unstructured random text",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "secrets": {
+            "Label": "Record submitted passwords",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "structured": {
+            "Label": "Log failed sign-ins without password content",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Do not log sign-in failures",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "secrets": {
+            "Label": "Make logs public",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "structured": {
+            "Label": "Protect log access and set retention limits",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Keep unprotected logs indefinitely",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "secrets": {
+            "Label": "Alert on every event without prioritization",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "structured": {
+            "Label": "Create actionable alerts for suspicious events",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Never react to patterns",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "secrets": {
+            "Label": "Use secrets as correlation identifiers",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "structured": {
+            "Label": "Make events correlatable for diagnosis and review",
+            "Feedback": ""
+          },
+          "none": {
+            "Label": "Omit stable event identifiers",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}

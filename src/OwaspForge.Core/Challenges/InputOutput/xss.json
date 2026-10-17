@@ -1,0 +1,333 @@
+{
+  "Metadata": {
+    "Id": "xss",
+    "CourseId": "input-output",
+    "Order": 2,
+    "Category": "A03: Injection",
+    "Difficulty": "easy",
+    "DurationMinutes": 20,
+    "Points": 160,
+    "OfficialUrl": "https://owasp.org/www-community/attacks/xss/",
+    "DemoId": "xss"
+  },
+  "Rules": [
+    {
+      "OptionValues": [
+        "raw",
+        "encode",
+        "client"
+      ],
+      "CorrectOption": "encode"
+    },
+    {
+      "OptionValues": [
+        "raw",
+        "encode",
+        "client"
+      ],
+      "CorrectOption": "encode"
+    },
+    {
+      "OptionValues": [
+        "client",
+        "encode",
+        "raw"
+      ],
+      "CorrectOption": "encode"
+    },
+    {
+      "OptionValues": [
+        "raw",
+        "encode",
+        "client"
+      ],
+      "CorrectOption": "encode"
+    },
+    {
+      "OptionValues": [
+        "raw",
+        "encode",
+        "client"
+      ],
+      "CorrectOption": "encode"
+    },
+    {
+      "OptionValues": [
+        "raw",
+        "encode",
+        "client"
+      ],
+      "CorrectOption": "encode"
+    }
+  ],
+  "German": {
+    "Title": "Cross-Site Scripting",
+    "LearningGoal": "Du verstehst, dass Ausgaben kontextgerecht encodiert werden müssen.",
+    "Explanation": "Die historische Anzeige ist intentionally vulnerable, weil sie Text als HTML interpretiert. Die sichere Ansicht behandelt Beiträge als Text.",
+    "Task": "Wähle die sichere Ausgabe für einen lokalen Kommentar.",
+    "Impact": "Fremder Code könnte im Browserkontext der Lernseite laufen.",
+    "ExpectedAfterFix": "Der Kommentar erscheint als Text; Markup wird nicht ausgeführt.",
+    "Hints": [
+      "Razor encodiert normale Textausgaben automatisch.",
+      "Verwende keine HTML-Roh-Ausgabe für Benutzereingaben."
+    ],
+    "SolutionExplanation": "Kontextgerechtes Encoding behandelt Beiträge als Text. Eine Content-Security-Policy ergänzt die sichere Ausgabe, ersetzt sie aber nicht.",
+    "Example": {
+      "Context": "Ein Kommentar enthält das harmlose Markup `<b>Neu</b>`.",
+      "RiskySnippet": "@Html.Raw(comment)",
+      "SaferSnippet": "<p>@comment</p>",
+      "Takeaway": "Die sichere Ausgabe zeigt die Zeichen an, statt sie als HTML zu deuten.",
+      "KeyPoints": [
+        "Encoding hängt vom Ausgabe-Kontext ab.",
+        "Rohes HTML gehört nicht in untrusted user content.",
+        "Eine CSP ergänzt Encoding, ersetzt es aber nicht."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /comments",
+      "Status": "200 OK",
+      "SecurityHeaders": "Content-Security-Policy: script-src 'self'",
+      "AuthenticationState": "Keine Anmeldung",
+      "AuthorizationResult": "Kommentar wird als Text encodiert ausgegeben."
+    },
+    "Questions": [
+      {
+        "Prompt": "Wähle die sichere Ausgabe für einen lokalen Kommentar.",
+        "Options": {
+          "raw": {
+            "Label": "Text als HTML-Rohinhalt ausgeben",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "encode": {
+            "Label": "Kontextgerecht HTML-encodieren",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Nur im Browser filtern",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche weitere Schutzregel gehört zu dieser Station?",
+        "Options": {
+          "raw": {
+            "Label": "Als ungeprüftes HTML rendern",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "encode": {
+            "Label": "Als Text mit passendem Output-Encoding rendern",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Erst nach dem Rendern filtern",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche serverseitige Entscheidung ist hier wichtig?",
+        "Options": {
+          "client": {
+            "Label": "Eine Client-Filterung voraussetzen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "encode": {
+            "Label": "Roh-HTML für Benutzereingaben vermeiden",
+            "Feedback": ""
+          },
+          "raw": {
+            "Label": "Die Eingabe mit Html.Raw ausgeben",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie wird die Regel konsequent umgesetzt?",
+        "Options": {
+          "raw": {
+            "Label": "Text direkt in ein HTML-Attribut setzen",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "encode": {
+            "Label": "Für Attribute ein passendes Attribut-Encoding nutzen",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Nur sichtbare Zeichen entfernen",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Welche zusätzliche Massnahme stärkt den Schutz?",
+        "Options": {
+          "raw": {
+            "Label": "Eine Benutzereingabe direkt als Linkziel verwenden",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "encode": {
+            "Label": "URLs vor Verwendung auf erlaubte Schemas und Ziele prüfen",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Nur den Linktext encodieren",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      },
+      {
+        "Prompt": "Wie überprüfst du die Schutzregel?",
+        "Options": {
+          "raw": {
+            "Label": "Auf eine CSP verzichten",
+            "Feedback": "Diese Variante schützt die Station nicht zuverlässig."
+          },
+          "encode": {
+            "Label": "Eine Content-Security-Policy als zusätzliche Schutzschicht einsetzen",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Nur ein Browser-Plugin erwarten",
+            "Feedback": "Diese Massnahme reicht allein nicht aus."
+          }
+        }
+      }
+    ]
+  },
+  "English": {
+    "Title": "Cross-Site Scripting",
+    "LearningGoal": "Learn how context-aware encoding keeps untrusted text from executing.",
+    "Explanation": "Safe output displays the characters instead of interpreting them as HTML. Encoding depends on the output context. Raw HTML must not be used for untrusted content. A CSP adds defence in depth; it does not replace encoding.",
+    "Task": "Choose the safe output for a local comment.",
+    "Impact": "Untrusted code could run in the browser context of the learning page.",
+    "ExpectedAfterFix": "Context-aware output encoding is the primary defence. A Content Security Policy is a useful additional layer.",
+    "Hints": [
+      "Razor automatically encodes normal text output.",
+      "Do not render user input as raw HTML."
+    ],
+    "SolutionExplanation": "Context-aware output encoding is the primary defence. A Content Security Policy is a useful additional layer.",
+    "Example": {
+      "Context": "A comment contains the harmless markup `<b>New</b>`.",
+      "RiskySnippet": "@Html.Raw(comment)",
+      "SaferSnippet": "<p>@comment</p>",
+      "Takeaway": "Safe output displays the characters instead of interpreting them as HTML.",
+      "KeyPoints": [
+        "Encoding depends on the output context.",
+        "Raw HTML must not be used for untrusted content.",
+        "A CSP adds defence in depth; it does not replace encoding."
+      ]
+    },
+    "Protocol": {
+      "Method": "POST /comments",
+      "Status": "200 OK",
+      "SecurityHeaders": "Content-Security-Policy: script-src 'self'",
+      "AuthenticationState": "No sign-in",
+      "AuthorizationResult": "The comment is encoded as text."
+    },
+    "Questions": [
+      {
+        "Prompt": "Choose the safe output for a local comment.",
+        "Options": {
+          "raw": {
+            "Label": "Render text as raw HTML",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "encode": {
+            "Label": "Apply context-aware HTML encoding",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Filter only in the browser",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which additional control belongs to this protection?",
+        "Options": {
+          "raw": {
+            "Label": "Render unchecked HTML",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "encode": {
+            "Label": "Render text with the appropriate output encoding",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Filter after rendering",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which decision must the server enforce?",
+        "Options": {
+          "client": {
+            "Label": "Assume browser-side filtering exists",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "encode": {
+            "Label": "Avoid raw HTML for user input",
+            "Feedback": ""
+          },
+          "raw": {
+            "Label": "Render the input with Html.Raw",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How is this rule applied consistently?",
+        "Options": {
+          "raw": {
+            "Label": "Insert text directly into an HTML attribute",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "encode": {
+            "Label": "Use the appropriate encoding for attributes",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Remove only visible characters",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "Which measure strengthens the protection further?",
+        "Options": {
+          "raw": {
+            "Label": "Use user input directly as a link target",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "encode": {
+            "Label": "Validate URL schemes and destinations before use",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Encode only the link text",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      },
+      {
+        "Prompt": "How would you verify this protection rule?",
+        "Options": {
+          "raw": {
+            "Label": "Omit the CSP",
+            "Feedback": "This option does not reliably protect the station."
+          },
+          "encode": {
+            "Label": "Add a Content Security Policy as a further layer",
+            "Feedback": ""
+          },
+          "client": {
+            "Label": "Rely on a browser extension",
+            "Feedback": "This option does not reliably protect the station."
+          }
+        }
+      }
+    ]
+  }
+}
